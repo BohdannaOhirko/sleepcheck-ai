@@ -1,6 +1,11 @@
 // src/components/landing/Hero.tsx
+'use client';
+import Link from 'next/link';
+interface HeroProps {
+  onOpenChat?: () => void;
+}
 
-export default function Hero() {
+export default function Hero({ onOpenChat }: HeroProps) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-primary/5 to-secondary py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8">
       
@@ -56,8 +61,10 @@ export default function Hero() {
           </p>
           
           {/* Кнопки */}
+          
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 animate-fade-down animation-delay-600 px-4">
-            <button className="group relative px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 overflow-hidden shadow-lg hover:shadow-xl">
+           <Link href="/questionnaire"> 
+           <button className="group relative px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 overflow-hidden shadow-lg hover:shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--logo-green)] via-[var(--logo-lime)] to-[var(--logo-bright)] transition-transform duration-300 group-hover:scale-105"></div>
               <span className="relative text-white flex items-center justify-center gap-2">
                 Пройти анкету безкоштовно
@@ -66,8 +73,8 @@ export default function Hero() {
                 </svg>
               </span>
             </button>
-            
-            <button className="group px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border-2 border-border bg-card hover:border-[var(--logo-aqua)] hover:bg-accent transition-all duration-300">
+            </Link>
+            <button onClick={onOpenChat} className="relative z-20 group px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border-2 border-border bg-card hover:border-[var(--logo-aqua)] hover:bg-accent transition-all duration-300">
               <span className="flex items-center justify-center gap-2">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--logo-default)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />

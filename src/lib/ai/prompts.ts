@@ -1,4 +1,4 @@
-import { QuestionnaireAnswers } from '@/types/questionnaire'
+import { Answer } from '@/types/questionnaire'
 
 // System prompt для аналізу анкети
 export const ANALYSIS_SYSTEM_PROMPT = `
@@ -21,7 +21,7 @@ export const ANALYSIS_SYSTEM_PROMPT = `
 `
 
 // Функція для формування prompt для аналізу
-export function buildAnalysisPrompt(answers: QuestionnaireAnswers): string {
+export function buildAnalysisPrompt(answers: Answer[]): string {
   return `
 Проаналізуй відповіді користувача на анкету про розлади сну:
 

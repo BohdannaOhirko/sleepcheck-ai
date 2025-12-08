@@ -1,94 +1,105 @@
-import Link from 'next/link'
-import { Phone, Mail, MapPin, Facebook, Instagram } from 'lucide-react'
+import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Про компанію */}
-          <div>
-            <h4 className="font-semibold mb-4 text-left">Ехокор</h4>
-            <p className="text-gray-400 text-sm text-left">
-              Медичний центр з діагностики розладів сну. 
-              Допомагаємо покращити якість вашого життя.
+    <footer className="bg-gradient-to-b from-muted/20 to-background border-t border-border">
+      <div className="container mx-auto px-6 py-16 max-w-6xl">
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+          
+          <div className="text-center md:text-left">
+            <h4 className="text-xl font-light mb-4 tracking-tight">
+              <span className="bg-gradient-to-r from-[var(--logo-default)] to-[var(--logo-aqua)] bg-clip-text text-transparent font-semibold">
+                Ехокор
+              </span>
+            </h4>
+            <p className="text-sm text-muted-foreground font-light leading-relaxed">
+              Медичний центр з діагностики розладів сну. Допомагаємо покращити якість вашого життя.
             </p>
           </div>
 
-          {/* Навігація */}
-          <div>
-            <h4 className="font-semibold mb-4">Навігація</h4>
-            <ul className="space-y-2 text-sm">
+          <div className="text-center md:text-left">
+            <h4 className="font-medium mb-4 text-foreground tracking-tight">Навігація</h4>
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/" className="text-gray-400 hover:text-white transition">
+                <Link href="/" className="text-muted-foreground font-light hover:text-primary transition-colors duration-300">
                   Головна
                 </Link>
               </li>
               <li>
-                <Link href="/questionnaire" className="text-gray-400 hover:text-white transition">
+                <Link href="/questionnaire" className="text-muted-foreground font-light hover:text-primary transition-colors duration-300">
                   Тест на ризики
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="text-gray-400 hover:text-white transition">
+                <Link href="/services" className="text-muted-foreground font-light hover:text-primary transition-colors duration-300">
                   Послуги
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-white transition">
+                <Link href="/about" className="text-muted-foreground font-light hover:text-primary transition-colors duration-300">
                   Про нас
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Послуги */}
-          <div>
-            <h4 className="font-semibold mb-4">Послуги</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="text-gray-400">Консультація сомнолога</li>
-              <li className="text-gray-400">Полісомнографія</li>
-              <li className="text-gray-400">Діагностика апное</li>
-              <li className="text-gray-400">Лікування розладів сну</li>
+          <div className="text-center md:text-left">
+            <h4 className="font-medium mb-4 text-foreground tracking-tight">Послуги</h4>
+            <ul className="space-y-3 text-sm text-muted-foreground font-light">
+              <li>Консультація сомнолога</li>
+              <li>Полісомнографія</li>
+              <li>Діагностика апное</li>
+              <li>AI-діагностика сну</li>
             </ul>
           </div>
 
-          {/* Контакти */}
-          <div>
-            <h4 className="font-semibold mb-4">Контакти</h4>
+          <div className="text-center md:text-left">
+            <h4 className="font-medium mb-4 text-foreground tracking-tight">Контакти</h4>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center space-x-2 text-gray-400">
-                <Phone size={16} />
-                <span>+380 98 098 881 4499</span>
+              <li className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground font-light">
+                <span>📞</span>
+                <a href="tel:+380988814499" className="hover:text-primary transition-colors">
+                  +380 98 881 4499
+                </a>
               </li>
-              <li className="flex items-center space-x-2 text-gray-400">
-                <Mail size={16} />
-                <span>info @ehokor.com.ua</span>
+              <li className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground font-light">
+                <span>✉️</span>
+                <a href="mailto:info@ehokor.com.ua" className="hover:text-primary transition-colors">
+                  info@ehokor.com.ua
+                </a>
               </li>
-              <li className="flex items-center space-x-2 text-gray-400">
-                <MapPin size={16} />
+              <li className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground font-light">
+                <span>📍</span>
                 <span>Львів, вул. Угорська, 17</span>
               </li>
             </ul>
             
-            {/* Соцмережі */}
-            <div className="flex space-x-4 mt-4">
-              <a href="#" className="text-gray-400 hover:text-white transition">
-                <Facebook size={20} />
+            <div className="flex justify-center md:justify-start gap-4 mt-6">
+              <a 
+                href="#" 
+                className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
+                aria-label="Facebook"
+              >
+                <span className="text-lg">f</span>
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
-                <Instagram size={20} />
+              <a 
+                href="#" 
+                className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
+                aria-label="Instagram"
+              >
+                <span className="text-lg">📷</span>
               </a>
             </div>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Ехокор. Всі права захищені.</p>
+        <div className="border-t border-border pt-8 text-center">
+          <p className="text-sm text-muted-foreground font-light">
+            &copy; {new Date().getFullYear()} Ехокор. Всі права захищені.
+          </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
-
