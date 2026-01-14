@@ -13,6 +13,7 @@ interface BookingModalProps {
 
 export default function BookingModal({ isOpen, onClose, serviceName }: BookingModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const {
     register,
@@ -28,15 +29,36 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
     try {
       console.log('✅ Валідовані дані запису:', { ...data, service: serviceName });
       
-      // TODO: Відправка на API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Відправка на API
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'service',
+          serviceName: serviceName,
+          name: data.name,
+          phone: data.phone,
+          email: data.email || '',
+          comment: data.comment || '',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Помилка відправки');
+      }
       
+      setSubmitSuccess(true);
       reset();
-      onClose();
       
-      alert('✓ Заявку успішно відправлено!');
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        onClose();
+      }, 2000);
     } catch (error) {
       console.error('❌ Помилка відправки:', error);
+      alert('❌ Помилка відправки. Спробуйте ще раз.');
     } finally {
       setIsSubmitting(false);
     }
@@ -67,6 +89,15 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
           <div className="mb-6 p-4 bg-primary/5 rounded-2xl border border-primary/20">
             <p className="text-sm font-medium text-primary">{serviceName}</p>
           </div>
+
+          {submitSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-center animate-in fade-in duration-300">
+              <p className="text-green-700 font-semibold flex items-center justify-center gap-2">
+                <span className="text-xl">✓</span>
+                Заявку успішно відправлено!
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>

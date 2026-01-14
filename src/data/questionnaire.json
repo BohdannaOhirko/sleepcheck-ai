@@ -570,8 +570,8 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "totalQuestions": 35,
-    "estimatedTime": "10-15 хвилин",
+    "totalQuestions": 30,
+    "estimatedTime": "8-12 хвилин",
     "scoringSystem": {
       "low": {
         "range": [0, 30],

@@ -19,23 +19,41 @@ export default function ContactForm() {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    setIsSubmitting(true);
-    try {
-      console.log('✅ Валідовані дані:', data);
-      
-      // TODO: Тут буде відправка на API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSubmitSuccess(true);
-      reset();
-      
-      setTimeout(() => setSubmitSuccess(false), 3000);
-    } catch (error) {
-      console.error('❌ Помилка відправки:', error);
-    } finally {
-      setIsSubmitting(false);
+  setIsSubmitting(true);
+  try {
+    console.log('✅ Валідовані дані:', data);
+    
+    // Відправка на API
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        formType: 'consultation',
+        name: data.name,
+        phone: data.phone,
+        email: data.email || '',
+        consultationType: data.specialist,
+        comment: data.message || '',
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'Помилка відправки');
     }
-  };
+    
+    setSubmitSuccess(true);
+    reset();
+    
+    setTimeout(() => setSubmitSuccess(false), 3000);
+  } catch (error) {
+    console.error('❌ Помилка відправки:', error);
+    alert('Помилка відправки. Спробуйте ще раз.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <section className="py-16 px-6">

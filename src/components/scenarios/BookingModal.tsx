@@ -37,13 +37,39 @@ export function BookingModal({ isOpen, onClose, specialist }: BookingModalProps)
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  
+  try {
+    // Відправка на API
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        formType: 'ehokor',
+        name: formData.name,
+        phone: formData.phone,
+        specialist: formData.specialist || 'Не вказано',
+        desiredDate: formData.date || 'Не вказано',
+        comment: formData.message || '',
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'Помилка відправки');
+    }
+
     setIsSuccess(true);
-  };
+  } catch (error) {
+    console.error('❌ Помилка відправки:', error);
+    alert('❌ Помилка відправки. Спробуйте ще раз.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
