@@ -43,8 +43,8 @@ export default function QuestionnairePage() {
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-1">Займає 5-7 хвилин</h3>
-              <p className="text-sm text-muted-foreground">35 простих питань про ваш сон та самопочуття</p>
+              <h3 className="font-semibold text-foreground mb-1">Займає 2-5 хвилин</h3>
+              <p className="text-sm text-muted-foreground">30 простих питань про ваш сон та самопочуття</p>
             </div>
           </div>
 

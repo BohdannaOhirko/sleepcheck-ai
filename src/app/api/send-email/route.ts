@@ -1,9 +1,26 @@
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
+import { escapeFormData } from '@/lib/security/escapeHtml';
+import { emailRatelimit, getClientIp } from '@/lib/security/ratelimit';
 
 export async function POST(request: Request) {
   try {
-    const { formType, ...formData } = await request.json();
+    // ✅ RATE LIMITING - 3 запити на 10 хвилин
+    const ip = getClientIp(request);
+    const { success } = await emailRatelimit.limit(ip);
+    
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Занадто багато заявок. Спробуйте через 10 хвилин.' },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json();
+    const { formType, ...rawFormData } = body;
+
+    // ✅ ЗАХИСТ: Екрануємо всі поля від XSS
+    const formData = escapeFormData(rawFormData);
 
     // Налаштування Zoho SMTP
     const transporter = nodemailer.createTransport({
@@ -18,7 +35,6 @@ export async function POST(request: Request) {
 
     // Шаблони для різних форм
     const emailTemplates: Record<string, { subject: string; html: string }> = {
-      // 1. Швидкий запис на консультацію
       consultation: {
         subject: `🔔 Швидкий запис від ${formData.name}`,
         html: `
@@ -50,7 +66,6 @@ export async function POST(request: Request) {
         `,
       },
       
-      // 2. Запис на послугу (модальні форми)
       service: {
         subject: `🏥 Запис на послугу: ${formData.serviceName}`,
         html: `
@@ -82,7 +97,6 @@ export async function POST(request: Request) {
         `,
       },
       
-      // 3. Форма МЦ "Ехокор"
       ehokor: {
         subject: `🏥 Запис в МЦ Ехокор від ${formData.name}`,
         html: `
@@ -125,7 +139,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Відправка email
     await transporter.sendMail({
       from: `"SleepCheck AI" <${process.env.SMTP_USER}>`,
       to: process.env.RECEIVER_EMAIL,

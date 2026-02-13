@@ -1,7 +1,9 @@
-// Типи питань
-export type QuestionType = 'scale' | 'yesno' | 'multiple' | 'numeric'
+// ============================================
+// БАЗОВІ ТИПИ
+// ============================================
 
-// Категорії ризиків
+export type QuestionType = 'scale' | 'yesno' | 'multiple' | 'numeric' | 'bmi';
+
 export type RiskCategory = 
   | 'respiratory' 
   | 'sleep_quality' 
@@ -9,75 +11,104 @@ export type RiskCategory =
   | 'risk_factors' 
   | 'lifestyle' 
   | 'symptoms'
-  | 'quality_of_life'
+  | 'quality_of_life';
 
-// Рівні ризику
-export type RiskLevel = 'low' | 'moderate' | 'high' | 'critical'
+export type RiskLevel = 'low' | 'moderate' | 'high' | 'critical';
 
-// Структура питання
+// ============================================
+// СТРУКТУРА ПИТАНЬ (для questionnaire.json)
+// ============================================
+
+export interface QuestionOption {
+  id: string;
+  label: string;
+  value?: string | number;
+  weight?: number;
+}
+
+export interface ScaleLabels {
+  [key: number]: string;
+}
+
+export interface Scale {
+  min: number;
+  max: number;
+  step?: number;
+  labels?: ScaleLabels;
+}
+
 export interface Question {
-  id: string
-  type: QuestionType
-  question: string
-  description?: string
-  weight: number
-  category: RiskCategory
-  critical?: boolean
-  reverse?: boolean // Для питань, де більше = краще
+  id: string;
+  type: QuestionType;
+  question: string;
+  subtitle?: string;
+  hint?: string;
+  description?: string;
+  weight?: number;
+  category?: RiskCategory;
+  critical?: boolean;
+  reverse?: boolean;
+  required?: boolean;
   
   // Для scale питань
-  scale?: {
-    min: number
-    max: number
-    step: number
-  }
+  scale?: Scale;
   
   // Для multiple питань
-  options?: Array<{
-    id: string
-    label: string
-    weight: number
-  }>
+  options?: QuestionOption[];
+  maxSelections?: number;
   
-  // Для numeric питань
-  min?: number
-  max?: number
-  unit?: string
+  // Для numeric/bmi питань
+  min?: number;
+  max?: number;
+  unit?: string;
+  placeholder?: string;
 }
 
-// Секція анкети
-export interface QuestionnaireSection {
-  id: string
-  title: string
-  description: string
-  questions: Question[]
+export interface Section {
+  id: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  questions: Question[];
 }
 
-// Повна анкета
-export interface Questionnaire {
-  sections: QuestionnaireSection[]
+export interface QuestionnaireData {
+  version?: string;
+  title?: string;
+  description?: string;
+  sections: Section[];
 }
 
-// Відповіді користувача
+// ============================================
+// ВІДПОВІДІ ТА РЕЗУЛЬТАТИ
+// ============================================
+
 export interface QuestionnaireAnswers {
-  [questionId: string]: any
+  [questionId: string]: string | number | boolean | string[] | { weight: number; height: number };
 }
 
-// Результати оцінювання
+export interface CategoryScore {
+  score: number;
+  maxScore: number;
+  percentage: number;
+}
+
 export interface QuestionnaireResults {
-  totalScore: number
-  maxScore: number
-  percentage: number
-  riskLevel: RiskLevel
+  totalScore: number;
+  maxScore: number;
+  percentage: number;
+  riskLevel: RiskLevel;
   categoryScores: {
-    [category in RiskCategory]?: {
-      score: number
-      maxScore: number
-      percentage: number
-    }
-  }
-  criticalFlags: string[]
-  keySymptoms: string[]
-  bmi?: number
+    [category in RiskCategory]?: CategoryScore;
+  };
+  criticalFlags: string[];
+  keySymptoms: string[];
+  bmi?: number;
 }
 
+// ============================================
+// LEGACY ALIASES (для сумісності зі старим кодом)
+// ============================================
+
+export type QuestionnaireSection = Section;
+export type Questionnaire = QuestionnaireData;

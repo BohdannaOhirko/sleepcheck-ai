@@ -47,3 +47,4 @@ export default function AirwayModal({ isOpen, onClose }: AirwayModalProps) {
     </div>
   );
 }
+

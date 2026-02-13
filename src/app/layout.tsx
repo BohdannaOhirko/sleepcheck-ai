@@ -3,7 +3,6 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
-import VideoIntro from "@/components/VideoIntro"   // ← ДОДАЛИ
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
@@ -20,13 +19,9 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <body className={inter.className}>
-        <VideoIntro>                   {/* ← Початок інтрo */}
-          <Header />
-          <main className="min-h-screen pt-20">
-            {children}
-          </main>
-          <Footer />
-        </VideoIntro>                 {/* ← Кінець інтрo */}
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   )

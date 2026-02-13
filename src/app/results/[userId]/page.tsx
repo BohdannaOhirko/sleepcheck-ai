@@ -2,8 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import questionnaireData from '@/data/questionnaire.json';
+import { Section } from '@/types/questionnaire';
+import { AlertCircle, Printer, RotateCcw } from 'lucide-react';
+import { ExaminationsBlock } from '@/components/scenarios/ExaminationsBlock';
+import { ConditionsList } from '@/components/scenarios/ConditionsList';
+import { UrgencyLevel, PossibleCondition } from '@/types/scenarios';
+import { RiskCard } from './components/RiskCard';
+import { RecommendationsList } from './components/RecommendationsList';
+import { ConsequencesBlock } from './components/ConsequencesBlock';
+import { AnswersSection } from './components/AnswersSection';
+import { getUrgencyData, getPossibleConditions, generateRecommendations } from './utils/dataGenerators';
+import { formatAnswerValue, getFormattedAnswers, FormattedAnswer } from './utils/formatters';
 
-// Тип для результату користувача
 interface UserResult {
   userId: string;
   userName: string;
@@ -12,6 +23,8 @@ interface UserResult {
   completedAt: string;
   answers: Record<string, any>;
   recommendations?: string[];
+  urgencyData?: UrgencyLevel;
+  possibleConditions?: PossibleCondition[];
 }
 
 export default function UserResultPage() {
@@ -27,78 +40,39 @@ export default function UserResultPage() {
   }, [userId]);
 
   const loadResult = () => {
-  try {
-    // Отримати відповіді з анкети
-    const answersData = localStorage.getItem('questionnaireAnswers');
-    if (!answersData) {
+    try {
+      const answersData = localStorage.getItem('questionnaireAnswers');
+      if (!answersData) {
+        setResult(null);
+        setLoading(false);
+        return;
+      }
+
+      const answers = JSON.parse(answersData);
+      const { calculateTotalScore } = require('@/lib/scoring/calculator');
+      const { determineRiskLevel } = require('@/lib/scoring/risk-levels');
+      
+      const score = calculateTotalScore(answers);
+      const risk = determineRiskLevel(score);
+
+      const userResult: UserResult = {
+        userId: userId,
+        userName: 'Користувач',
+        totalScore: score,
+        riskLevel: risk === 'critical' ? 'high' : risk === 'moderate' ? 'medium' : 'low',
+        completedAt: new Date().toISOString(),
+        answers: answers,
+        recommendations: generateRecommendations(risk, answers),
+        urgencyData: getUrgencyData(risk, answers),
+        possibleConditions: getPossibleConditions(risk, answers)
+      };
+
+      setResult(userResult);
+    } catch (error) {
+      console.error('Помилка:', error);
       setResult(null);
+    } finally {
       setLoading(false);
-      return;
-    }
-
-    const answers = JSON.parse(answersData);
-
-    // Імпортуйте на початку файлу:
-    // import { calculateTotalScore } from '@/lib/scoring/calculator';
-    // import { determineRiskLevel, getRiskInfo as getInfo } from '@/lib/scoring/risk-levels';
-
-    // Розрахувати бали
-    const { calculateTotalScore } = require('@/lib/scoring/calculator');
-    const { determineRiskLevel } = require('@/lib/scoring/risk-levels');
-    
-    const score = calculateTotalScore(answers);
-    const risk = determineRiskLevel(score);
-
-    // Створити результат
-    const userResult: UserResult = {
-      userId: userId,
-      userName: 'Користувач',
-      totalScore: score,
-      riskLevel: risk === 'critical' ? 'high' : risk === 'moderate' ? 'medium' : 'low',
-      completedAt: new Date().toISOString(),
-      answers: answers,
-      recommendations: [] // Додамо пізніше
-    };
-
-    setResult(userResult);
-  } catch (error) {
-    console.error('Помилка:', error);
-    setResult(null);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const getRiskInfo = (level: string) => {
-    switch (level) {
-      case 'low':
-        return {
-          color: 'bg-green-100 border-green-500 text-green-800',
-          icon: '✅',
-          title: 'Низький ризик апное',
-          description: 'Ваші відповіді вказують на низьку ймовірність апное сну. Продовжуйте дотримуватися здорових звичок сну.'
-        };
-      case 'medium':
-        return {
-          color: 'bg-yellow-100 border-yellow-500 text-yellow-800',
-          icon: '⚠️',
-          title: 'Середній ризик апное',
-          description: 'Деякі ознаки вказують на можливі проблеми зі сном. Рекомендуємо проконсультуватися з лікарем.'
-        };
-      case 'high':
-        return {
-          color: 'bg-red-100 border-red-500 text-red-800',
-          icon: '🚨',
-          title: 'Високий ризик апное',
-          description: 'Ваші відповіді вказують на високу ймовірність апное сну. Настійно рекомендуємо звернутися до спеціаліста.'
-        };
-      default:
-        return {
-          color: 'bg-gray-100 border-gray-500 text-gray-800',
-          icon: '❓',
-          title: 'Невизначено',
-          description: 'Не вдалося визначити рівень ризику.'
-        };
     }
   };
 
@@ -115,7 +89,9 @@ export default function UserResultPage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <div className="text-6xl mb-4">😕</div>
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-10 h-10 text-gray-400" />
+            </div>
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Результат не знайдено
             </h2>
@@ -134,7 +110,13 @@ export default function UserResultPage() {
     );
   }
 
-  const riskInfo = getRiskInfo(result.riskLevel);
+  const formattedAnswers = getFormattedAnswers(result.answers, questionnaireData.sections);
+  const answersBySection = questionnaireData.sections
+    .map((section) => ({
+      section: section as Section,
+      answers: formattedAnswers.filter((answer) => answer.section.id === section.id)
+    }))
+    .filter((group) => group.answers.length > 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
@@ -143,7 +125,7 @@ export default function UserResultPage() {
         <div className="mb-6">
           <button
             onClick={() => router.push('/results')}
-            className="text-blue-600 hover:text-blue-800 mb-4 flex items-center gap-2"
+            className="text-blue-600 hover:text-blue-800 mb-4 flex items-center gap-2 font-medium hover:gap-3 transition-all"
           >
             ← Повернутися до всіх результатів
           </button>
@@ -156,72 +138,63 @@ export default function UserResultPage() {
         </div>
 
         {/* Основний результат */}
-        <div className={`${riskInfo.color} border-l-4 rounded-lg p-6 mb-6`}>
-          <div className="flex items-start gap-4">
-            <div className="text-4xl">{riskInfo.icon}</div>
-            <div>
-              <h2 className="text-2xl font-bold mb-2">{riskInfo.title}</h2>
-              <p className="text-lg mb-4">{riskInfo.description}</p>
-              <div className="mt-4">
-                <span className="text-3xl font-bold">{result.totalScore}</span>
-                <span className="text-lg ml-2">балів</span>
-              </div>
-            </div>
-          </div>
+        <div className="mb-6">
+          <RiskCard riskLevel={result.riskLevel} score={result.totalScore} />
         </div>
 
         {/* Рекомендації */}
         {result.recommendations && result.recommendations.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              📋 Рекомендації
-            </h3>
-            <ul className="space-y-3">
-              {result.recommendations.map((rec, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <span className="text-blue-600 font-bold mt-1">•</span>
-                  <span className="text-gray-700">{rec}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="mb-6">
+            <RecommendationsList recommendations={result.recommendations} />
           </div>
         )}
 
-        {/* Відповіді користувача */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            📝 Ваші відповіді
-          </h3>
-          <div className="space-y-4">
-            {Object.entries(result.answers).map(([key, value]) => (
-              <div key={key} className="border-b border-gray-200 pb-4 last:border-b-0">
-                <div className="font-medium text-gray-700 mb-2">
-                  Питання: {key}
-                </div>
-                <div className="text-gray-900 bg-gray-50 p-3 rounded">
-                  {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
-                </div>
-              </div>
-            ))}
+        {/* Можливі стани для перевірки */}
+        {result.possibleConditions && result.possibleConditions.length > 0 && (
+          <div className="mb-6">
+            <ConditionsList conditions={result.possibleConditions} />
           </div>
+        )}
+
+        {/* Можливі наслідки без лікування */}
+        <div className="mb-6">
+          <ConsequencesBlock riskLevel={result.riskLevel} />
+        </div>
+
+        {/* Рекомендовані обстеження */}
+        {result.urgencyData && (
+          <div className="mb-6">
+            <ExaminationsBlock urgency={result.urgencyData} />
+          </div>
+        )}
+
+        {/* Відповіді по секціях */}
+        <div className="mb-6">
+          <AnswersSection 
+            answersBySection={answersBySection} 
+            formatAnswerValue={formatAnswerValue}
+          />
         </div>
 
         {/* Кнопки дій */}
-        <div className="mt-6 flex gap-4">
+        <div className="flex gap-4">
           <button
             onClick={() => window.print()}
-            className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+            className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold shadow-md flex items-center justify-center gap-2"
           >
-            🖨️ Роздрукувати
+            <Printer className="w-5 h-5" />
+            Роздрукувати
           </button>
           <button
             onClick={() => router.push('/questionnaire/1')}
-            className="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+            className="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-semibold shadow-md flex items-center justify-center gap-2"
           >
-            🔄 Пройти знову
+            <RotateCcw className="w-5 h-5" />
+            Пройти знову
           </button>
         </div>
       </div>
     </div>
   );
 }
+

@@ -7,7 +7,10 @@ import { useState } from 'react';
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const {
     register,
@@ -19,53 +22,81 @@ export default function ContactForm() {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-  setIsSubmitting(true);
-  try {
-    console.log('✅ Валідовані дані:', data);
+    setIsSubmitting(true);
+    setSubmitStatus(null);
     
-    // Відправка на API
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        formType: 'consultation',
-        name: data.name,
-        phone: data.phone,
-        email: data.email || '',
-        consultationType: data.specialist,
-        comment: data.message || '',
-      }),
-    });
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'consultation',
+          name: data.name,
+          phone: data.phone,
+          email: data.email || '',
+          consultationType: data.specialist,
+          comment: data.message || '',
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!result.success) {
-      throw new Error(result.error || 'Помилка відправки');
+      // Обробка rate limiting (429)
+      if (response.status === 429) {
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Занадто багато заявок. Спробуйте через 10 хвилин або зателефонуйте нам безпосередньо: +38098 881 44 99'
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Обробка інших помилок
+      if (!result.success) {
+        throw new Error(result.error || 'Помилка відправки');
+      }
+      
+      setSubmitStatus({
+        type: 'success',
+        message: 'Дякуємо! Ми зв\'яжемося з вами найближчим часом.'
+      });
+      
+      reset();
+      
+      // Автоматично приховати повідомлення через 5 секунд
+      setTimeout(() => setSubmitStatus(null), 5000);
+      
+    } catch (error) {
+      console.error('Помилка відправки:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Помилка відправки. Спробуйте ще раз або зателефонуйте нам.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setSubmitSuccess(true);
-    reset();
-    
-    setTimeout(() => setSubmitSuccess(false), 3000);
-  } catch (error) {
-    console.error('❌ Помилка відправки:', error);
-    alert('Помилка відправки. Спробуйте ще раз.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   return (
-    <section className="py-16 px-6">
+    <section id="contacts" className="py-16 px-6">
       <div className="container mx-auto max-w-4xl">
         <div className="bg-card border border-border rounded-3xl p-8 md:p-12">
           <h3 className="text-2xl font-light mb-6 tracking-tight text-center">
             Швидкий запис на консультацію
           </h3>
 
-          {submitSuccess && (
-            <div className="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-center">
-              <p className="text-primary font-medium">✓ Заявку успішно відправлено!</p>
+          {submitStatus && (
+            <div className={`mb-6 p-4 rounded-xl text-center ${
+              submitStatus.type === 'success' 
+                ? 'bg-primary/10 border border-primary/20' 
+                : 'bg-destructive/10 border border-destructive/20'
+            }`}>
+              <p className={`font-medium ${
+                submitStatus.type === 'success' ? 'text-primary' : 'text-destructive'
+              }`}>
+                {submitStatus.type === 'success' ? '✓ ' : '⚠ '}
+                {submitStatus.message}
+              </p>
             </div>
           )}
 

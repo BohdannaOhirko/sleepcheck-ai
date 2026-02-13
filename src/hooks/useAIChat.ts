@@ -18,7 +18,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
       {
         id: '1',
         role: 'assistant',
-        content: 'Привіт! 👋 Я AI-консультант медичного центру "Ехокор". Допоможу вам з питаннями про розлади сну. Що вас турбує?',
+        content: 'Вітаю! Я консультант МЦ «Ехокор» з питань розладів сну. Чим можу допомогти?',
         timestamp: new Date(),
       },
     ]

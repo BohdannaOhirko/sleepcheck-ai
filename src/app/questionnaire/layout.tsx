@@ -1,9 +1,12 @@
-// app/questionnaire/layout.tsx
 'use client';
 
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import questionnaireData from '@/data/questionnaire.json';
+
+const QUESTIONS_PER_PAGE = 5;
+const TOTAL_QUESTIONS = 30;
 
 export default function QuestionnaireLayout({
   children,
@@ -12,22 +15,76 @@ export default function QuestionnaireLayout({
 }) {
   const pathname = usePathname();
   const [progress, setProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 35;
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [questionRange, setQuestionRange] = useState('');
 
-  useEffect(() => {
+  // Функція для підрахунку відповідей
+  const calculateAnsweredQuestions = () => {
+    try {
+      const saved = localStorage.getItem('questionnaireAnswers');
+      if (!saved) return 0;
+      
+      const answers = JSON.parse(saved);
+      
+      // Список всіх ID питань
+      const allQuestionIds: string[] = [];
+      questionnaireData.sections.forEach((section: any) => {
+        section.questions.forEach((q: any) => {
+          allQuestionIds.push(q.id);
+        });
+      });
+      
+      // Рахуємо тільки валідні відповіді на реальні питання
+      const validAnswers = Object.entries(answers).filter(([key, value]) => {
+        if (!allQuestionIds.includes(key)) return false;
+        if (value === null || value === undefined || value === '') return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        return true;
+      });
+      
+      return validAnswers.length;
+    } catch {
+      return 0;
+    }
+  };
+
+  // Функція оновлення прогресу
+  const updateProgress = () => {
     const stepMatch = pathname.match(/\/questionnaire\/(\d+)/);
     if (stepMatch) {
-      const step = parseInt(stepMatch[1]);
-      setCurrentStep(step);
-      setProgress((step / totalSteps) * 100);
+      const page = parseInt(stepMatch[1]);
+      
+      const firstQuestion = (page - 1) * QUESTIONS_PER_PAGE + 1;
+      const lastQuestion = Math.min(page * QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
+      
+      setQuestionRange(`${firstQuestion}-${lastQuestion}`);
+      
+      const answered = calculateAnsweredQuestions();
+      setAnsweredCount(answered);
+      setProgress((answered / TOTAL_QUESTIONS) * 100);
     } else if (pathname === '/questionnaire/results') {
-  setCurrentStep(totalSteps);
-  setProgress(100);
-  } else {
-      setCurrentStep(0);
+      setAnsweredCount(TOTAL_QUESTIONS);
+      setQuestionRange(`${TOTAL_QUESTIONS}`);
+      setProgress(100);
+    } else {
+      setAnsweredCount(0);
+      setQuestionRange('');
       setProgress(0);
     }
+  };
+
+  useEffect(() => {
+    updateProgress();
+
+    const handleQuestionnaireUpdate = () => {
+      updateProgress();
+    };
+
+    window.addEventListener('questionnaire-updated', handleQuestionnaireUpdate);
+
+    return () => {
+      window.removeEventListener('questionnaire-updated', handleQuestionnaireUpdate);
+    };
   }, [pathname]);
 
   return (
@@ -44,7 +101,10 @@ export default function QuestionnaireLayout({
               <div>
                 <h2 className="font-semibold text-foreground">Анкета сну</h2>
                 <p className="text-xs text-muted-foreground">
-                  {currentStep > 0 ? `Питання ${currentStep} з ${totalSteps}` : 'Почнемо перевірку'}
+                  {questionRange 
+                    ? `Питання ${questionRange} з ${TOTAL_QUESTIONS}` 
+                    : 'Почнемо перевірку'
+                  }
                 </p>
               </div>
             </div>
@@ -66,7 +126,9 @@ export default function QuestionnaireLayout({
           </div>
           <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
             <span>Прогрес проходження</span>
-            <span className="font-semibold text-[var(--logo-green)]">{Math.round(progress)}%</span>
+            <span className="font-semibold text-[var(--logo-green)]">
+              {answeredCount}/{TOTAL_QUESTIONS} ({Math.round(progress)}%)
+            </span>
           </div>
         </div>
       </header>

@@ -27,7 +27,6 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true);
     try {
-      console.log('✅ Валідовані дані запису:', { ...data, service: serviceName });
       
       // Відправка на API
       const response = await fetch('/api/send-email', {

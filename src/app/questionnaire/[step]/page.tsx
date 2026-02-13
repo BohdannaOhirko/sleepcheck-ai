@@ -9,7 +9,6 @@ import {
   QuestionMultiple,
   QuestionNumeric,
   QuestionBMI,
-  QuestionHeader,
   NavigationButtons,
 } from '@/components/questionnaire';
 import AirwayModal from '@/components/questionnaire/AirwayModal';
@@ -20,6 +19,7 @@ import {
   isNumericQuestion,
   isBMIQuestion,
 } from '@/types/questionnaire';
+import { getIcon } from '@/lib/icons';
 
 export default function QuestionPage() {
   const params = useParams();
@@ -27,68 +27,143 @@ export default function QuestionPage() {
   const [showAirwayModal, setShowAirwayModal] = useState(false);
 
   const {
-    questionData,
+    questionsData,
     totalQuestions,
-    answer,
-    setAnswer,
+    totalPages,
+    currentPage,
+    firstQuestionNumber,
+    lastQuestionNumber,
+    answers,
+    updateAnswer,
     handleNext,
     handleBack,
     canProceed,
   } = useQuestionnaire(step);
 
-  if (!questionData) {
+  // Функція для підрахунку прогресу
+  const calculateProgress = () => {
+    try {
+      const saved = localStorage.getItem('questionnaireAnswers');
+      if (!saved) return { count: 0, percentage: 0 };
+      
+      const savedAnswers = JSON.parse(saved);
+      const validCount = Object.values(savedAnswers).filter(v => 
+        v !== null && v !== undefined && v !== '' && 
+        !(Array.isArray(v) && v.length === 0)
+      ).length;
+      
+      return { 
+        count: validCount, 
+        percentage: (validCount / totalQuestions) * 100 
+      };
+    } catch {
+      return { count: 0, percentage: 0 };
+    }
+  };
+
+  const progress = calculateProgress();
+
+  if (!questionsData || questionsData.length === 0) {
     return null;
   }
 
-  const { question, section } = questionData;
-
-  // Показувати 3D візуалізацію на питанні про зупинки дихання (крок 9)
-  const shouldShow3DButton = question.id === 'breathing-pauses';
-
-  const renderQuestion = () => {
+  const renderQuestion = (question: any, answer: any) => {
     if (isScaleQuestion(question)) {
-      return <QuestionScale question={question} value={answer} onChange={setAnswer} />;
+      return (
+        <QuestionScale 
+          question={question} 
+          value={answer} 
+          onChange={(value) => updateAnswer(question.id, value)} 
+        />
+      );
     }
 
     if (isYesNoQuestion(question)) {
-      return <QuestionYesNo question={question} value={answer} onChange={setAnswer} />;
+      return (
+        <QuestionYesNo 
+          question={question} 
+          value={answer} 
+          onChange={(value) => updateAnswer(question.id, value)} 
+        />
+      );
     }
 
     if (isMultipleQuestion(question)) {
-      return <QuestionMultiple question={question} value={answer} onChange={setAnswer} />;
+      return (
+        <QuestionMultiple 
+          question={question} 
+          value={answer} 
+          onChange={(value) => updateAnswer(question.id, value)} 
+        />
+      );
     }
 
     if (isNumericQuestion(question)) {
-      return <QuestionNumeric question={question} value={answer} onChange={setAnswer} />;
+      return (
+        <QuestionNumeric 
+          question={question} 
+          value={answer} 
+          onChange={(value) => updateAnswer(question.id, value)} 
+        />
+      );
     }
 
     if (isBMIQuestion(question)) {
-      return <QuestionBMI question={question} value={answer} onChange={setAnswer} />;
+      return (
+        <QuestionBMI 
+          question={question} 
+          value={answer} 
+          onChange={(value) => updateAnswer(question.id, value)} 
+        />
+      );
     }
 
     return <div>Невідомий тип питання</div>;
   };
 
+  const hasBreathingPausesQuestion = questionsData.some(
+    ({ question }) => question.id === 'breathing-pauses'
+  );
+
   return (
     <div className="max-w-3xl mx-auto">
-      <QuestionHeader
-        section={section}
-        question={question}
-        currentStep={step}
-        totalSteps={totalQuestions}
-      />
+      {/* Header з прогресом */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              {getIcon(questionsData[0].section.icon || 'activity', 'w-6 h-6 text-blue-600')}
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">
+              {questionsData[0].section.title}
+            </h1>
+          </div>
+          <span className="text-sm text-muted-foreground font-medium">
+            Питання {firstQuestionNumber}-{lastQuestionNumber} з {totalQuestions}
+          </span>
+        </div>
+        
+        {/* Прогрес бар - синхронізований з верхнім */}
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div
+            className="bg-gradient-to-r from-green-500 to-blue-500 h-2.5 rounded-full transition-all duration-300"
+            style={{ width: `${progress.percentage}%` }}
+          />
+        </div>
+        
+        <p className="text-sm text-muted-foreground mt-2">
+          Прогрес проходження: {progress.count}/{totalQuestions} ({Math.round(progress.percentage)}%)
+        </p>
+      </div>
 
       <div className="bg-card rounded-3xl shadow-xl border border-border p-8 sm:p-10">
-        
-        {/* Кнопка для 3D візуалізації */}
-        {shouldShow3DButton && (
+        {/* 3D візуалізація */}
+        {hasBreathingPausesQuestion && (
           <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <div className="relative">
-                  {/* Glow ефект */}
                   <div className="absolute -inset-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-30"></div>
-                  {/* Іконка */}
                   <div className="relative w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-3xl">🫁</span>
                   </div>
@@ -99,16 +174,13 @@ export default function QuestionPage() {
                   Що таке зупинки дихання?
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                  Подивіться інтерактивну 3D візуалізацію обструктивного апное сну. 
-                  Ви побачите як дихальні шляхи блокуються під час сну.
+                  Подивіться інтерактивну 3D візуалізацію обструктивного апное сну.
                 </p>
                 <button
                   onClick={() => setShowAirwayModal(true)}
                   className="group relative inline-flex items-center gap-2"
                 >
-                  {/* Glow ефект кнопки */}
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition"></div>
-                  {/* Кнопка */}
                   <span className="relative px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-md flex items-center gap-2">
                     🔍 Показати 3D модель
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,22 +193,62 @@ export default function QuestionPage() {
           </div>
         )}
 
-        <div className="mb-8">{renderQuestion()}</div>
+        {/* Рендер всіх питань на сторінці */}
+        <div className="space-y-8">
+          {questionsData.map(({ question, section }, index) => {
+            const questionNumber = firstQuestionNumber + index;
+            
+            return (
+              <div key={question.id} className="pb-8 border-b border-border last:border-b-0 last:pb-0">
+                <div className="mb-4">
+                  {/* Нумерація питання */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold flex items-center justify-center text-lg shadow-md">
+                      {questionNumber}
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Питання {questionNumber} з {totalQuestions}
+                    </span>
+                  </div>
+                  
+                  {/* Заголовок питання */}
+                  <h2 className="text-xl font-bold text-foreground mb-1">
+                    {question.question}
+                  </h2>
+                  
+                  {/* Підзаголовок */}
+                  {question.subtitle && (
+                    <p className="text-sm text-muted-foreground mt-1">{question.subtitle}</p>
+                  )}
+                  
+                  {/* Підказка */}
+                  {question.hint && (
+                    <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                      <span>ℹ️</span>
+                      <span>{question.hint}</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Компонент питання */}
+                {renderQuestion(question, answers[question.id])}
+              </div>
+            );
+          })}
+        </div>
 
-        <NavigationButtons
-          onBack={handleBack}
-          onNext={handleNext}
-          canProceed={canProceed()}
-          isFirstStep={step === 1}
-          isLastStep={step === totalQuestions}
-        />
+     <div className="mt-12">
+  <NavigationButtons
+    onBack={handleBack}
+    onNext={handleNext}
+    canProceed={canProceed()}
+    isFirstStep={step === 1}
+    isLastStep={step === totalPages}
+  />
+</div>
       </div>
 
-      {/* Модальне вікно з 3D */}
-      <AirwayModal 
-        isOpen={showAirwayModal} 
-        onClose={() => setShowAirwayModal(false)} 
-      />
+      <AirwayModal isOpen={showAirwayModal} onClose={() => setShowAirwayModal(false)} />
     </div>
   );
 }
