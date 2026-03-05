@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { bookingFormSchema, type BookingFormData } from '@/lib/validations/forms';
 import { useState } from 'react';
+import { X } from 'lucide-react';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -15,49 +16,33 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<BookingFormData>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
   });
 
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true);
     try {
-      
-      // Відправка на API
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           formType: 'service',
-          serviceName: serviceName,
+          serviceName,
           name: data.name,
           phone: data.phone,
           email: data.email || '',
           comment: data.comment || '',
         }),
       });
-
       const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || 'Помилка відправки');
-      }
-      
+      if (!result.success) throw new Error(result.error || 'Помилка відправки');
       setSubmitSuccess(true);
       reset();
-      
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        onClose();
-      }, 2000);
+      setTimeout(() => { setSubmitSuccess(false); onClose(); }, 2000);
     } catch (error) {
-      console.error('❌ Помилка відправки:', error);
-      alert('❌ Помилка відправки. Спробуйте ще раз.');
+      console.error('Помилка:', error);
+      alert('Помилка відправки. Спробуйте ще раз.');
     } finally {
       setIsSubmitting(false);
     }
@@ -65,144 +50,91 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
 
   if (!isOpen) return null;
 
+  const inputClass = (hasError: boolean) =>
+    `w-full px-4 py-3 rounded-xl border text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
+      hasError ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 focus:ring-green-200 focus:border-green-300'
+    }`;
+
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300"
+    <div
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
-      <div 
-        className="bg-card rounded-3xl shadow-2xl w-full max-w-md border border-border animate-in slide-in-from-bottom-4 duration-300"
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-gray-100"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-light tracking-tight">Запис на послугу</h3>
-            <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full hover:bg-muted transition-colors flex items-center justify-center"
-            >
-              ✕
+        <div className="p-7">
+          {/* Шапка */}
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-xl font-bold text-gray-900">Запис на послугу</h3>
+            <button onClick={onClose}
+              className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors">
+              <X size={16} className="text-gray-400" />
             </button>
           </div>
 
-          <div className="mb-6 p-4 bg-primary/5 rounded-2xl border border-primary/20">
-            <p className="text-sm font-medium text-primary">{serviceName}</p>
+          {/* Обрана послуга */}
+          <div className="mb-5 px-4 py-3 rounded-xl border border-green-100 bg-green-50">
+            <p className="text-sm font-semibold text-green-700">{serviceName}</p>
           </div>
 
+          {/* Успіх */}
           {submitSuccess && (
-            <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-center animate-in fade-in duration-300">
+            <div className="mb-5 p-4 bg-green-50 border border-green-200 rounded-xl text-center">
               <p className="text-green-700 font-semibold flex items-center justify-center gap-2">
-                <span className="text-xl">✓</span>
-                Заявку успішно відправлено!
+                <span>✓</span> Заявку успішно відправлено!
               </p>
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2 text-muted-foreground">
-                Ваше ім'я <span className="text-destructive">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Ваше ім'я <span className="text-red-400">*</span>
               </label>
-              <input
-                {...register('name')}
-                type="text"
-                placeholder="Іван Іваненко"
-                className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 transition-all ${
-                  errors.name 
-                    ? 'border-destructive focus:ring-destructive/50' 
-                    : 'border-border focus:ring-primary/50'
-                }`}
-              />
-              {errors.name && (
-                <p className="mt-1 text-xs text-destructive">
-                  {errors.name.message}
-                </p>
-              )}
+              <input {...register('name')} type="text" placeholder="Іван Іваненко"
+                className={inputClass(!!errors.name)} />
+              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-muted-foreground">
-                Телефон <span className="text-destructive">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Телефон <span className="text-red-400">*</span>
               </label>
-              <input
-                {...register('phone')}
-                type="tel"
-                placeholder="+380671234567"
-                className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 transition-all ${
-                  errors.phone 
-                    ? 'border-destructive focus:ring-destructive/50' 
-                    : 'border-border focus:ring-primary/50'
-                }`}
-              />
-              {errors.phone && (
-                <p className="mt-1 text-xs text-destructive">
-                  {errors.phone.message}
-                </p>
-              )}
+              <input {...register('phone')} type="tel" placeholder="+380671234567"
+                className={inputClass(!!errors.phone)} />
+              {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-muted-foreground">
-                Email
-              </label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="example@mail.com"
-                className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 transition-all ${
-                  errors.email 
-                    ? 'border-destructive focus:ring-destructive/50' 
-                    : 'border-border focus:ring-primary/50'
-                }`}
-              />
-              {errors.email && (
-                <p className="mt-1 text-xs text-destructive">
-                  {errors.email.message}
-                </p>
-              )}
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+              <input {...register('email')} type="email" placeholder="example@mail.com"
+                className={inputClass(!!errors.email)} />
+              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-muted-foreground">
-                Коментар
-              </label>
-              <textarea
-                {...register('comment')}
-                rows={3}
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Коментар</label>
+              <textarea {...register('comment')} rows={3}
                 placeholder="Ваші побажання щодо дати та часу..."
-                className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 transition-all resize-none ${
-                  errors.comment 
-                    ? 'border-destructive focus:ring-destructive/50' 
-                    : 'border-border focus:ring-primary/50'
-                }`}
-              />
-              {errors.comment && (
-                <p className="mt-1 text-xs text-destructive">
-                  {errors.comment.message}
-                </p>
-              )}
+                className={`${inputClass(!!errors.comment)} resize-none`} />
+              {errors.comment && <p className="mt-1 text-xs text-red-500">{errors.comment.message}</p>}
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full group relative px-8 py-4 rounded-xl font-medium overflow-hidden transition-all duration-500 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--logo-green)] to-[var(--logo-lime)] transition-transform duration-500 group-hover:scale-110"></div>
-              <span className="relative text-white flex items-center justify-center gap-2">
-                {isSubmitting ? (
-                  <>
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    Відправляємо...
-                  </>
-                ) : (
-                  'Відправити заявку'
-                )}
-              </span>
+            <button type="submit" disabled={isSubmitting}
+              className="w-full py-3.5 rounded-xl font-semibold text-white text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              style={{ background: 'linear-gradient(135deg, var(--logo-green), #1a7a4a)' }}>
+              {isSubmitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Відправляємо...
+                </span>
+              ) : 'Відправити заявку'}
             </button>
 
-            <p className="text-xs text-muted-foreground text-center">
-              <span className="text-destructive">*</span> Обов'язкові поля
+            <p className="text-xs text-gray-400 text-center">
+              <span className="text-red-400">*</span> Обов'язкові поля
             </p>
           </form>
         </div>

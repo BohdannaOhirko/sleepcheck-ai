@@ -5,11 +5,34 @@ import { useRouter } from 'next/navigation';
 import { calculateTotalScore, calculateCategoryScores } from '@/lib/scoring/calculator';
 import { determineRiskLevel, getRiskInfo } from '@/lib/scoring/risk-levels';
 import { generateRecommendations } from '@/lib/scoring/recommendations';
+import { supabase } from '@/lib/supabase/client';
 
 export default function ResultsPage() {
   const router = useRouter();
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const saveToSupabase = async (answers: any, resultsData: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      await supabase
+        .from('questionnaire_results')
+        .insert({
+          user_id: session.user.id,
+          answers: answers,
+          total_score: resultsData.score,
+          risk_level: resultsData.riskLevel,
+          recommendations: resultsData.recommendations,
+          sleep_quality: resultsData.categories?.sleepQuality ?? null,
+          fall_asleep_time: resultsData.categories?.fallAsleepTime ?? null,
+          key_issues: [],
+        });
+    } catch (err) {
+      console.error('Помилка збереження:', err);
+    }
+  };
 
   useEffect(() => {
     const answersData = localStorage.getItem('questionnaireAnswers');
@@ -27,13 +50,17 @@ export default function ResultsPage() {
       const categories = calculateCategoryScores(answers);
       const recommendations = generateRecommendations(riskLevel, score, answers);
 
-      setResults({
+      const resultsData = {
         score,
         riskLevel,
         riskInfo,
         categories,
-        recommendations
-      });
+        recommendations,
+      };
+
+      setResults(resultsData);
+      saveToSupabase(answers, resultsData);
+
     } catch (error) {
       console.error('Помилка:', error);
     } finally {

@@ -263,31 +263,26 @@
             {
               "id": "irritability",
               "label": "Дратівливість",
-              "icon": "😤",
               "weight": 1.5
             },
             {
               "id": "anxiety",
               "label": "Тривожність",
-              "icon": "😰",
               "weight": 2
             },
             {
               "id": "depression",
               "label": "Пригніченість",
-              "icon": "😔",
               "weight": 2.5
             },
             {
               "id": "mood-swings",
               "label": "Перепади настрою",
-              "icon": "🎭",
               "weight": 1.5
             },
             {
               "id": "none",
               "label": "Нічого з перерахованого",
-              "icon": "😊",
               "weight": 0,
               "positive": true
             }
@@ -484,38 +479,32 @@
             {
               "id": "loud-snoring",
               "label": "Гучне хропіння",
-              "icon": "🔊",
               "weight": 2
             },
             {
               "id": "breathing-stops",
               "label": "Зупинки дихання",
-              "icon": "😨",
               "weight": 5,
               "trigger": "critical"
             },
             {
               "id": "restless",
               "label": "Неспокійний сон",
-              "icon": "😫",
               "weight": 1.5
             },
             {
               "id": "kicks",
               "label": "Рухи ногами",
-              "icon": "🦵",
               "weight": 1
             },
             {
               "id": "talks",
               "label": "Розмови уві сні",
-              "icon": "💬",
               "weight": 0.5
             },
             {
               "id": "none",
               "label": "Немає скарг",
-              "icon": "😊",
               "weight": 0,
               "positive": true
             }

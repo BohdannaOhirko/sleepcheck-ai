@@ -18,48 +18,49 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service, onBook }: ServiceCardProps) {
   return (
-    <div className="group bg-card border border-border rounded-3xl p-8 md:p-10 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+    <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-green-200 hover:shadow-md transition-all duration-300 p-7">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        
         <div className="flex-1">
           <div className="flex items-start gap-4 mb-4">
-            <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center text-2xl`}>
+            <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center text-xl`}>
               {service.icon}
             </div>
             <div>
-              <h3 className="text-2xl font-light mb-1 tracking-tight">{service.title}</h3>
-              <p className="text-sm text-muted-foreground font-light">{service.subtitle}</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-0.5">{service.title}</h3>
+              <p className="text-sm text-gray-400">{service.subtitle}</p>
             </div>
           </div>
-          <p className="text-muted-foreground font-light leading-relaxed mb-4">
-            {service.description}
-          </p>
-          <ul className="space-y-2 text-sm text-muted-foreground font-light">
+
+          <p className="text-gray-500 leading-relaxed mb-4 text-sm">{service.description}</p>
+
+          <div className="flex flex-wrap gap-2">
             {service.features.map((feature, index) => (
-              <li key={index} className="flex items-center gap-2">
+              <span key={index}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-xs text-gray-600">
                 <span style={{ color: service.color }}>✓</span>
                 {feature}
-              </li>
+              </span>
             ))}
-          </ul>
+          </div>
         </div>
-        <div className="lg:text-right flex-shrink-0">
-          <div className="mb-4">
-            <div className="text-4xl font-light mb-1">
+
+        <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4 flex-shrink-0">
+          <div className="lg:text-right">
+            <div className="text-3xl font-bold">
               <span className={`bg-gradient-to-r ${service.gradient} bg-clip-text text-transparent`}>
                 {service.price.toLocaleString()}
               </span>
-              <span className="text-xl text-muted-foreground"> грн</span>
+              <span className="text-base text-gray-400 font-normal"> грн</span>
             </div>
-            <p className="text-xs text-muted-foreground font-light">Остаточна ціна</p>
+            <p className="text-xs text-gray-400 mt-0.5">фіксована ціна</p>
           </div>
           <button
             onClick={() => onBook(service.title)}
-            className="group/btn px-6 py-3 rounded-xl font-light text-sm border border-primary hover:bg-primary hover:text-white transition-all duration-300 w-full lg:w-auto"
+            className="flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{ background: service.color }}
           >
-            <span className="flex items-center justify-center gap-2">
-              Записатись
-              <span className="transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
-            </span>
+            Записатись →
           </button>
         </div>
       </div>

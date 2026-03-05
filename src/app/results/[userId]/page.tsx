@@ -1,5 +1,6 @@
 'use client';
 
+import { saveQuestionnaireResult } from './actions';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import questionnaireData from '@/data/questionnaire.json';
@@ -67,6 +68,17 @@ export default function UserResultPage() {
         possibleConditions: getPossibleConditions(risk, answers)
       };
 
+      // Зберегти в базу якщо користувач авторизований
+      saveQuestionnaireResult({
+        answers: answers,
+        riskLevel: userResult.riskLevel === 'high' ? 'Високий' : userResult.riskLevel === 'medium' ? 'Середній' : 'Низький',
+        totalScore: score,
+        recommendations: userResult.recommendations || [],
+        keyIssues: userResult.possibleConditions?.map(c => c.name) || [],
+        fallAsleepTime: answers.fallAsleepTime,
+        sleepQuality: answers.sleepQuality,
+      }).catch(err => console.log('Не авторизований або помилка:', err));
+
       setResult(userResult);
     } catch (error) {
       console.error('Помилка:', error);
@@ -121,7 +133,6 @@ export default function UserResultPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Заголовок */}
         <div className="mb-6">
           <button
             onClick={() => router.push('/results')}
@@ -137,38 +148,32 @@ export default function UserResultPage() {
           </p>
         </div>
 
-        {/* Основний результат */}
         <div className="mb-6">
           <RiskCard riskLevel={result.riskLevel} score={result.totalScore} />
         </div>
 
-        {/* Рекомендації */}
         {result.recommendations && result.recommendations.length > 0 && (
           <div className="mb-6">
             <RecommendationsList recommendations={result.recommendations} />
           </div>
         )}
 
-        {/* Можливі стани для перевірки */}
         {result.possibleConditions && result.possibleConditions.length > 0 && (
           <div className="mb-6">
             <ConditionsList conditions={result.possibleConditions} />
           </div>
         )}
 
-        {/* Можливі наслідки без лікування */}
         <div className="mb-6">
           <ConsequencesBlock riskLevel={result.riskLevel} />
         </div>
 
-        {/* Рекомендовані обстеження */}
         {result.urgencyData && (
           <div className="mb-6">
             <ExaminationsBlock urgency={result.urgencyData} />
           </div>
         )}
 
-        {/* Відповіді по секціях */}
         <div className="mb-6">
           <AnswersSection 
             answersBySection={answersBySection} 
@@ -176,7 +181,6 @@ export default function UserResultPage() {
           />
         </div>
 
-        {/* Кнопки дій */}
         <div className="flex gap-4">
           <button
             onClick={() => window.print()}
@@ -197,4 +201,3 @@ export default function UserResultPage() {
     </div>
   );
 }
-
