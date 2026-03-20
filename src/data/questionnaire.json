@@ -43,10 +43,10 @@
           "id": "sleep-time",
           "type": "numeric",
           "question": "О котрій годині ви зазвичай лягаєте спати?",
-          "subtitle": "Вкажіть типовий час відходу до сну",
-          "hint": "Використовуйте 24-годинний формат",
-          "min": 20,
-          "max": 24,
+          "subtitle": "Вкажіть типовий час відходу до сну (після опівночі: 25 = 01:00, 26 = 02:00)",
+          "hint": "Використовуйте 24-годинний формат. Для нічних працівників — час початку основного сну",
+          "min": 18,
+          "max": 29,
           "default": 23,
           "unit": "година",
           "weight": 1,
@@ -57,8 +57,8 @@
           "type": "numeric",
           "question": "Скільки часу вам потрібно, щоб заснути?",
           "subtitle": "Середній час від моменту, коли ви лягаєте до засинання",
-          "hint": "Вкажіть приблизний час у хвилинах",
-          "min": 5,
+          "hint": "Менше 5 хв може вказувати на надмірну сонливість. Норма — 10–20 хвилин",
+          "min": 1,
           "max": 120,
           "default": 15,
           "unit": "хвилин",
@@ -123,6 +123,7 @@
           "question": "Наскільки гучне ваше хропіння?",
           "subtitle": "Якщо ви хропите, оцініть гучність",
           "hint": "0 = тихе, 10 = дуже гучне (чути в інших кімнатах)",
+          "showIf": "snoring === true",
           "scale": {
             "min": 0,
             "max": 10,
@@ -136,7 +137,7 @@
           "weight": 2,
           "category": "symptoms",
           "trigger": "moderate",
-          "default": 5
+          "default": 0
         },
         {
           "id": "breathing-pauses",
@@ -206,7 +207,7 @@
           "type": "scale",
           "question": "Як часто ви засинаєте під час сидячої діяльності?",
           "subtitle": "Наприклад, під час читання, перегляду ТБ, зборів",
-          "hint": "0 = ніколи, 10 = дуже часто",
+          "hint": "0 = ніколи, 10 = дуже часто. Засинання під час розмови або за кермом — критичний сигнал",
           "scale": {
             "min": 0,
             "max": 10,
@@ -217,7 +218,7 @@
               "10": "Дуже часто"
             }
           },
-          "weight": 3,
+          "weight": 2,
           "category": "daytime",
           "trigger": "moderate",
           "default": 5
@@ -258,37 +259,16 @@
           "type": "multiple",
           "question": "Які зміни настрою ви помічаєте?",
           "subtitle": "Оберіть всі варіанти, що підходять",
-          "hint": "Порушення сну можуть впливати на емоційний стан",
+          "hint": "Порушення сну можуть впливати на емоційний стан. Пригніченість може бути як причиною, так і наслідком поганого сну",
           "options": [
-            {
-              "id": "irritability",
-              "label": "Дратівливість",
-              "weight": 1.5
-            },
-            {
-              "id": "anxiety",
-              "label": "Тривожність",
-              "weight": 2
-            },
-            {
-              "id": "depression",
-              "label": "Пригніченість",
-              "weight": 2.5
-            },
-            {
-              "id": "mood-swings",
-              "label": "Перепади настрою",
-              "weight": 1.5
-            },
-            {
-              "id": "none",
-              "label": "Нічого з перерахованого",
-              "weight": 0,
-              "positive": true
-            }
+            { "id": "irritability", "label": "Дратівливість", "weight": 1.5 },
+            { "id": "anxiety", "label": "Тривожність", "weight": 1.5 },
+            { "id": "depression", "label": "Пригніченість", "weight": 1.5 },
+            { "id": "mood-swings", "label": "Перепади настрою", "weight": 1.5 },
+            { "id": "none", "label": "Нічого з перерахованого", "weight": 0, "positive": true }
           ],
           "maxSelections": 4,
-          "weight": 2,
+          "weight": 1.5,
           "category": "daytime",
           "default": []
         },
@@ -318,33 +298,20 @@
           "subtitle": "Для розрахунку індексу маси тіла (ІМТ)",
           "hint": "ІМТ ≥ 30 значно підвищує ризик апное сну",
           "fields": {
-            "weight": {
-              "label": "Вага",
-              "min": 40,
-              "max": 200,
-              "unit": "кг"
-            },
-            "height": {
-              "label": "Зріст",
-              "min": 140,
-              "max": 220,
-              "unit": "см"
-            }
+            "weight": { "label": "Вага", "min": 40, "max": 200, "unit": "кг" },
+            "height": { "label": "Зріст", "min": 140, "max": 220, "unit": "см" }
           },
           "weight": 3,
           "category": "health",
           "critical": true,
-          "default": {
-            "weight": 70,
-            "height": 170
-          }
+          "default": { "weight": 70, "height": 170 }
         },
         {
           "id": "age",
           "type": "numeric",
           "question": "Скільки вам років?",
           "subtitle": "Вік є важливим фактором ризику",
-          "hint": "Ризик апное сну зростає з віком",
+          "hint": "Ризик апное сну зростає з віком, особливо після 40 років",
           "min": 18,
           "max": 100,
           "default": 35,
@@ -357,14 +324,15 @@
           "type": "numeric",
           "question": "Який обхват вашої шиї?",
           "subtitle": "Виміряйте сантиметром на рівні кадика",
-          "hint": "Обхват шиї > 43 см (чоловіки) або > 41 см (жінки) підвищує ризик",
+          "hint": "Підвищений ризик: чоловіки > 43 см, жінки > 41 см",
           "min": 30,
           "max": 60,
           "default": 38,
           "unit": "см",
           "weight": 2.5,
           "category": "health",
-          "critical": true
+          "critical": true,
+          "thresholds": { "male": 43, "female": 41 }
         },
         {
           "id": "hypertension",
@@ -420,11 +388,7 @@
             "min": 0,
             "max": 10,
             "step": 1,
-            "labels": {
-              "0": "Ніколи",
-              "5": "Іноді",
-              "10": "Щодня"
-            }
+            "labels": { "0": "Ніколи", "5": "Іноді", "10": "Щодня" }
           },
           "weight": 1.5,
           "category": "lifestyle",
@@ -440,11 +404,7 @@
             "min": 0,
             "max": 10,
             "step": 1,
-            "labels": {
-              "0": "Сидячий",
-              "5": "Помірний",
-              "10": "Дуже активний"
-            }
+            "labels": { "0": "Сидячий", "5": "Помірний", "10": "Дуже активний" }
           },
           "weight": 1,
           "category": "lifestyle",
@@ -475,39 +435,14 @@
           "question": "На що скаржиться ваш партнер?",
           "subtitle": "Оберіть всі варіанти, що підходять",
           "hint": "Ці спостереження можуть вказувати на апное сну",
+          "showIf": "has-partner === true",
           "options": [
-            {
-              "id": "loud-snoring",
-              "label": "Гучне хропіння",
-              "weight": 2
-            },
-            {
-              "id": "breathing-stops",
-              "label": "Зупинки дихання",
-              "weight": 5,
-              "trigger": "critical"
-            },
-            {
-              "id": "restless",
-              "label": "Неспокійний сон",
-              "weight": 1.5
-            },
-            {
-              "id": "kicks",
-              "label": "Рухи ногами",
-              "weight": 1
-            },
-            {
-              "id": "talks",
-              "label": "Розмови уві сні",
-              "weight": 0.5
-            },
-            {
-              "id": "none",
-              "label": "Немає скарг",
-              "weight": 0,
-              "positive": true
-            }
+            { "id": "loud-snoring", "label": "Гучне хропіння", "weight": 2 },
+            { "id": "breathing-stops", "label": "Зупинки дихання", "weight": 5, "trigger": "critical" },
+            { "id": "restless", "label": "Неспокійний сон", "weight": 1.5 },
+            { "id": "kicks", "label": "Рухи ногами", "weight": 1 },
+            { "id": "talks", "label": "Розмови уві сні", "weight": 0.5 },
+            { "id": "none", "label": "Немає скарг", "weight": 0, "positive": true }
           ],
           "weight": 3,
           "category": "observations",
@@ -519,15 +454,12 @@
           "question": "Наскільки ваш сон заважає партнеру?",
           "subtitle": "Чи порушується сон вашого партнера через вас",
           "hint": "0 = зовсім не заважає, 10 = дуже сильно заважає",
+          "showIf": "has-partner === true",
           "scale": {
             "min": 0,
             "max": 10,
             "step": 1,
-            "labels": {
-              "0": "Не заважає",
-              "5": "Помірно",
-              "10": "Дуже сильно"
-            }
+            "labels": { "0": "Не заважає", "5": "Помірно", "10": "Дуже сильно" }
           },
           "weight": 2,
           "category": "observations",
@@ -543,11 +475,7 @@
             "min": 0,
             "max": 10,
             "step": 1,
-            "labels": {
-              "0": "Не стурбований",
-              "5": "Помірно",
-              "10": "Дуже стурбований"
-            }
+            "labels": { "0": "Не стурбований", "5": "Помірно", "10": "Дуже стурбований" }
           },
           "weight": 1.5,
           "category": "general",
@@ -558,30 +486,14 @@
     }
   ],
   "metadata": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "totalQuestions": 30,
     "estimatedTime": "8-12 хвилин",
     "scoringSystem": {
-      "low": {
-        "range": [0, 30],
-        "label": "Низький ризик",
-        "color": "green"
-      },
-      "moderate": {
-        "range": [31, 50],
-        "label": "Помірний ризик",
-        "color": "yellow"
-      },
-      "high": {
-        "range": [51, 70],
-        "label": "Високий ризик",
-        "color": "orange"
-      },
-      "critical": {
-        "range": [71, 100],
-        "label": "Критичний ризик",
-        "color": "red"
-      }
+      "low": { "range": [0, 30], "label": "Низький ризик", "color": "green" },
+      "moderate": { "range": [31, 50], "label": "Помірний ризик", "color": "yellow" },
+      "high": { "range": [51, 70], "label": "Високий ризик", "color": "orange" },
+      "critical": { "range": [71, 100], "label": "Критичний ризик", "color": "red" }
     }
   }
 }

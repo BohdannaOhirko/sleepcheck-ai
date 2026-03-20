@@ -10,19 +10,21 @@ export async function saveQuestionnaireResult(data: {
   keyIssues: string[];
   fallAsleepTime?: number;
   sleepQuality?: number;
+  region?: string;
 }) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+console.log('user metadata:', JSON.stringify(user?.user_metadata));
 
   if (!user) {
     return { success: false, error: 'Користувач не авторизований' };
   }
-
+  
   const { data: result, error } = await supabase
     .from('questionnaire_results')
+
     .insert({
       user_id: user.id,
       answers: data.answers,
@@ -32,6 +34,9 @@ export async function saveQuestionnaireResult(data: {
       key_issues: data.keyIssues,
       fall_asleep_time: data.fallAsleepTime,
       sleep_quality: data.sleepQuality,
+      region: data.region,
+      name: user.user_metadata?.name || null,
+      contact: user.user_metadata?.phone || user.email || null,
     })
     .select()
     .single();

@@ -8,11 +8,15 @@ const QUESTIONS_PER_PAGE = 5;
 export function useQuestionnaire(step: number) {
   const router = useRouter();
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [isClient, setIsClient] = useState(false);
 
-  // Отримати всі питання як плоский масив
+  // Визначаємо що ми на клієнті
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const getAllQuestions = (): Array<{ question: Question; section: Section }> => {
     const allQuestions: Array<{ question: Question; section: Section }> = [];
-    
     for (const section of questionnaireData.sections) {
       for (const question of section.questions) {
         allQuestions.push({
@@ -21,16 +25,13 @@ export function useQuestionnaire(step: number) {
         });
       }
     }
-    
     return allQuestions;
   };
 
-  // Отримати питання для поточної сторінки
   const getQuestionsForPage = (pageNumber: number) => {
     const allQuestions = getAllQuestions();
     const startIndex = (pageNumber - 1) * QUESTIONS_PER_PAGE;
     const endIndex = startIndex + QUESTIONS_PER_PAGE;
-    
     return allQuestions.slice(startIndex, endIndex);
   };
 
@@ -38,53 +39,69 @@ export function useQuestionnaire(step: number) {
   const totalQuestions = allQuestions.length;
   const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
   const questionsData = getQuestionsForPage(step);
-  
-  // Розрахунок номерів питань на поточній сторінці
+
   const firstQuestionNumber = (step - 1) * QUESTIONS_PER_PAGE + 1;
   const lastQuestionNumber = Math.min(step * QUESTIONS_PER_PAGE, totalQuestions);
 
-  // Перевірка чи сторінка існує
   useEffect(() => {
     if (step > totalPages || step < 1) {
       router.push('/questionnaire/results');
     }
   }, [step, totalPages, router]);
 
-  // Завантажити збережені відповіді - ОНОВЛЕНО
- // Завантажити збережені відповіді
-useEffect(() => {
-  try {
-    const saved = localStorage.getItem('questionnaireAnswers');
-    const currentAnswers: Record<string, any> = saved ? JSON.parse(saved) : {};
-    
-    // Ініціалізувати поточні питання дефолтними значеннями якщо їх немає
-    questionsData.forEach(({ question }) => {
-      if (currentAnswers[question.id] === undefined || currentAnswers[question.id] === null) {
-        currentAnswers[question.id] = getQuestionDefault(question);
-      }
-    });
-    
-    setAnswers(currentAnswers);
-  } catch (error) {
-    console.error('Error loading answers:', error);
-    setAnswers({});
-  }
-}, []);
+  // Завантажити збережені відповіді — тільки на клієнті
+  useEffect(() => {
+    if (!isClient) return;
+    try {
+      const saved = localStorage.getItem('questionnaireAnswers');
+      const currentAnswers: Record<string, any> = saved ? JSON.parse(saved) : {};
 
-  // Оновити відповідь для конкретного питання - ОНОВЛЕНО
- const updateAnswer = (questionId: string, value: any) => {
-  setAnswers(prev => ({
-    ...prev,
-    [questionId]: value
-  }));
-};
+      questionsData.forEach(({ question }) => {
+        if (currentAnswers[question.id] === undefined || currentAnswers[question.id] === null) {
+          currentAnswers[question.id] = getQuestionDefault(question);
+        }
+      });
+
+      setAnswers(currentAnswers);
+    } catch (error) {
+      console.error('Error loading answers:', error);
+      setAnswers({});
+    }
+  }, [isClient]);
+
+  const updateAnswer = (questionId: string, value: any) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: value,
+    }));
+  };
+
+  // Підрахунок прогресу — безпечно для SSR
+  const calculateProgress = () => {
+    if (!isClient) return { count: 0, percentage: 0 };
+    try {
+      const saved = localStorage.getItem('questionnaireAnswers');
+      if (!saved) return { count: 0, percentage: 0 };
+
+      const savedAnswers = JSON.parse(saved);
+      const validCount = Object.values(savedAnswers).filter(v =>
+        v !== null && v !== undefined && v !== '' &&
+        !(Array.isArray(v) && (v as any[]).length === 0)
+      ).length;
+
+      return {
+        count: validCount,
+        percentage: (validCount / totalQuestions) * 100,
+      };
+    } catch {
+      return { count: 0, percentage: 0 };
+    }
+  };
 
   const handleNext = () => {
-    // Зберегти всі відповіді
     const saved = localStorage.getItem('questionnaireAnswers') || '{}';
     const allAnswers = JSON.parse(saved);
 
-    // Зберегти відповіді з поточної сторінки
     Object.keys(answers).forEach(questionId => {
       allAnswers[questionId] = answers[questionId];
     });
@@ -92,7 +109,6 @@ useEffect(() => {
     localStorage.setItem('questionnaireAnswers', JSON.stringify(allAnswers));
     window.dispatchEvent(new Event('questionnaire-updated'));
 
-    // Перейти на наступну сторінку або результати
     if (step < totalPages) {
       router.push(`/questionnaire/${step + 1}`);
     } else {
@@ -101,7 +117,6 @@ useEffect(() => {
   };
 
   const handleBack = () => {
-    // Зберегти поточні відповіді перед поверненням
     const saved = localStorage.getItem('questionnaireAnswers') || '{}';
     const allAnswers = JSON.parse(saved);
     Object.keys(answers).forEach(questionId => {
@@ -118,7 +133,6 @@ useEffect(() => {
   };
 
   const canProceed = () => {
-    // Перевірити чи всі питання на сторінці мають відповіді
     return questionsData.every(({ question }) => {
       const answer = answers[question.id];
       if (answer === null || answer === undefined) return false;
@@ -140,5 +154,6 @@ useEffect(() => {
     handleNext,
     handleBack,
     canProceed,
+    calculateProgress,
   };
 }

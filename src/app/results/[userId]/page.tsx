@@ -1,26 +1,36 @@
-'use client';
+"use client";
 
-import { saveQuestionnaireResult } from './actions';
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import questionnaireData from '@/data/questionnaire.json';
-import { Section } from '@/types/questionnaire';
-import { AlertCircle, Printer, RotateCcw } from 'lucide-react';
-import { ExaminationsBlock } from '@/components/scenarios/ExaminationsBlock';
-import { ConditionsList } from '@/components/scenarios/ConditionsList';
-import { UrgencyLevel, PossibleCondition } from '@/types/scenarios';
-import { RiskCard } from './components/RiskCard';
-import { RecommendationsList } from './components/RecommendationsList';
-import { ConsequencesBlock } from './components/ConsequencesBlock';
-import { AnswersSection } from './components/AnswersSection';
-import { getUrgencyData, getPossibleConditions, generateRecommendations } from './utils/dataGenerators';
-import { formatAnswerValue, getFormattedAnswers, FormattedAnswer } from './utils/formatters';
+import { saveQuestionnaireResult } from "./actions";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import questionnaireData from "@/data/questionnaire.json";
+import { Section } from "@/types/questionnaire";
+import { AlertCircle, Printer, RotateCcw } from "lucide-react";
+import { ExaminationsBlock } from "@/components/scenarios/ExaminationsBlock";
+import { ConditionsList } from "@/components/scenarios/ConditionsList";
+import { UrgencyLevel, PossibleCondition } from "@/types/scenarios";
+import { RiskCard } from "./components/RiskCard";
+import { RecommendationsList } from "./components/RecommendationsList";
+import { ConsequencesBlock } from "./components/ConsequencesBlock";
+import { AnswersSection } from "./components/AnswersSection";
+import { calculateTotalScore } from "@/lib/scoring/calculator";
+import { determineRiskLevel } from "@/lib/scoring/risk-levels";
+import {
+  getUrgencyData,
+  getPossibleConditions,
+  generateRecommendations,
+} from "./utils/dataGenerators";
+import {
+  formatAnswerValue,
+  getFormattedAnswers,
+  FormattedAnswer,
+} from "./utils/formatters";
 
 interface UserResult {
   userId: string;
   userName: string;
   totalScore: number;
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: "low" | "medium" | "high";
   completedAt: string;
   answers: Record<string, any>;
   recommendations?: string[];
@@ -32,7 +42,7 @@ export default function UserResultPage() {
   const params = useParams();
   const router = useRouter();
   const userId = params.userId as string;
-  
+
   const [result, setResult] = useState<UserResult | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,9 +50,9 @@ export default function UserResultPage() {
     loadResult();
   }, [userId]);
 
-  const loadResult = () => {
+  const loadResult = async () => {
     try {
-      const answersData = localStorage.getItem('questionnaireAnswers');
+      const answersData = localStorage.getItem("questionnaireAnswers");
       if (!answersData) {
         setResult(null);
         setLoading(false);
@@ -50,38 +60,53 @@ export default function UserResultPage() {
       }
 
       const answers = JSON.parse(answersData);
-      const { calculateTotalScore } = require('@/lib/scoring/calculator');
-      const { determineRiskLevel } = require('@/lib/scoring/risk-levels');
-      
+
       const score = calculateTotalScore(answers);
       const risk = determineRiskLevel(score);
 
       const userResult: UserResult = {
         userId: userId,
-        userName: 'Користувач',
+        userName: "Користувач",
         totalScore: score,
-        riskLevel: risk === 'critical' ? 'high' : risk === 'moderate' ? 'medium' : 'low',
+        riskLevel:
+          risk === "critical" ? "high" : risk === "moderate" ? "medium" : "low",
         completedAt: new Date().toISOString(),
         answers: answers,
         recommendations: generateRecommendations(risk, answers),
         urgencyData: getUrgencyData(risk, answers),
-        possibleConditions: getPossibleConditions(risk, answers)
+        possibleConditions: getPossibleConditions(risk, answers),
       };
 
-      // Зберегти в базу якщо користувач авторизований
+      // Отримати регіон по IP
+      let region: string | undefined;
+      try {
+        const geoRes = await fetch("https://ipapi.co/json/");
+        const geoData = await geoRes.json();
+        region = geoData.region;
+      } catch {
+        region = undefined;
+      }
+
+      // Зберегти в базу (один раз!)
       saveQuestionnaireResult({
         answers: answers,
-        riskLevel: userResult.riskLevel === 'high' ? 'Високий' : userResult.riskLevel === 'medium' ? 'Середній' : 'Низький',
+        riskLevel:
+          userResult.riskLevel === "high"
+            ? "Високий"
+            : userResult.riskLevel === "medium"
+              ? "Середній"
+              : "Низький",
         totalScore: score,
         recommendations: userResult.recommendations || [],
-        keyIssues: userResult.possibleConditions?.map(c => c.name) || [],
+        keyIssues: userResult.possibleConditions?.map((c) => c.name) || [],
         fallAsleepTime: answers.fallAsleepTime,
         sleepQuality: answers.sleepQuality,
-      }).catch(err => console.log('Не авторизований або помилка:', err));
+        region: region,
+      }).catch((err) => console.log("Не авторизований або помилка:", err));
 
       setResult(userResult);
     } catch (error) {
-      console.error('Помилка:', error);
+      console.error("Помилка:", error);
       setResult(null);
     } finally {
       setLoading(false);
@@ -111,7 +136,7 @@ export default function UserResultPage() {
               Не вдалося знайти результати для цього користувача
             </p>
             <button
-              onClick={() => router.push('/results')}
+              onClick={() => router.push("/results")}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
             >
               Повернутися до результатів
@@ -122,11 +147,16 @@ export default function UserResultPage() {
     );
   }
 
-  const formattedAnswers = getFormattedAnswers(result.answers, questionnaireData.sections);
+  const formattedAnswers = getFormattedAnswers(
+    result.answers,
+    questionnaireData.sections,
+  );
   const answersBySection = questionnaireData.sections
     .map((section) => ({
       section: section as Section,
-      answers: formattedAnswers.filter((answer) => answer.section.id === section.id)
+      answers: formattedAnswers.filter(
+        (answer) => answer.section.id === section.id,
+      ),
     }))
     .filter((group) => group.answers.length > 0);
 
@@ -135,7 +165,7 @@ export default function UserResultPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <button
-            onClick={() => router.push('/results')}
+            onClick={() => router.push("/results")}
             className="text-blue-600 hover:text-blue-800 mb-4 flex items-center gap-2 font-medium hover:gap-3 transition-all"
           >
             ← Повернутися до всіх результатів
@@ -144,7 +174,8 @@ export default function UserResultPage() {
             Персональні результати
           </h1>
           <p className="text-gray-600">
-            {result.userName || 'Анонімний користувач'} • {new Date(result.completedAt).toLocaleDateString('uk-UA')}
+            {result.userName || "Анонімний користувач"} •{" "}
+            {new Date(result.completedAt).toLocaleDateString("uk-UA")}
           </p>
         </div>
 
@@ -175,8 +206,8 @@ export default function UserResultPage() {
         )}
 
         <div className="mb-6">
-          <AnswersSection 
-            answersBySection={answersBySection} 
+          <AnswersSection
+            answersBySection={answersBySection}
             formatAnswerValue={formatAnswerValue}
           />
         </div>
@@ -190,7 +221,7 @@ export default function UserResultPage() {
             Роздрукувати
           </button>
           <button
-            onClick={() => router.push('/questionnaire/1')}
+            onClick={() => router.push("/questionnaire/1")}
             className="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-semibold shadow-md flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />
