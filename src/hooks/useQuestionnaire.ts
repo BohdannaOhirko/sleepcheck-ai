@@ -5,12 +5,14 @@ import { Question, Section, getQuestionDefault } from '@/types/questionnaire';
 
 const QUESTIONS_PER_PAGE = 5;
 
+type AnswerValue = string | number | boolean | string[] | null;
+type AnswersRecord = Record<string, AnswerValue>;
+
 export function useQuestionnaire(step: number) {
   const router = useRouter();
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<AnswersRecord>({});
   const [isClient, setIsClient] = useState(false);
 
-  // Визначаємо що ми на клієнті
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -49,12 +51,11 @@ export function useQuestionnaire(step: number) {
     }
   }, [step, totalPages, router]);
 
-  // Завантажити збережені відповіді — тільки на клієнті
   useEffect(() => {
     if (!isClient) return;
     try {
       const saved = localStorage.getItem('questionnaireAnswers');
-      const currentAnswers: Record<string, any> = saved ? JSON.parse(saved) : {};
+      const currentAnswers: AnswersRecord = saved ? JSON.parse(saved) : {};
 
       questionsData.forEach(({ question }) => {
         if (currentAnswers[question.id] === undefined || currentAnswers[question.id] === null) {
@@ -67,26 +68,26 @@ export function useQuestionnaire(step: number) {
       console.error('Error loading answers:', error);
       setAnswers({});
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient]);
 
-  const updateAnswer = (questionId: string, value: any) => {
+  const updateAnswer = (questionId: string, value: AnswerValue) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value,
     }));
   };
 
-  // Підрахунок прогресу — безпечно для SSR
   const calculateProgress = () => {
     if (!isClient) return { count: 0, percentage: 0 };
     try {
       const saved = localStorage.getItem('questionnaireAnswers');
       if (!saved) return { count: 0, percentage: 0 };
 
-      const savedAnswers = JSON.parse(saved);
+      const savedAnswers: AnswersRecord = JSON.parse(saved);
       const validCount = Object.values(savedAnswers).filter(v =>
         v !== null && v !== undefined && v !== '' &&
-        !(Array.isArray(v) && (v as any[]).length === 0)
+        !(Array.isArray(v) && v.length === 0)
       ).length;
 
       return {
@@ -100,7 +101,7 @@ export function useQuestionnaire(step: number) {
 
   const handleNext = () => {
     const saved = localStorage.getItem('questionnaireAnswers') || '{}';
-    const allAnswers = JSON.parse(saved);
+    const allAnswers: AnswersRecord = JSON.parse(saved);
 
     Object.keys(answers).forEach(questionId => {
       allAnswers[questionId] = answers[questionId];
@@ -118,7 +119,7 @@ export function useQuestionnaire(step: number) {
 
   const handleBack = () => {
     const saved = localStorage.getItem('questionnaireAnswers') || '{}';
-    const allAnswers = JSON.parse(saved);
+    const allAnswers: AnswersRecord = JSON.parse(saved);
     Object.keys(answers).forEach(questionId => {
       allAnswers[questionId] = answers[questionId];
     });

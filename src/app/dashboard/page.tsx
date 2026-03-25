@@ -3,12 +3,28 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { LogOut, User, Phone, Mail, ClipboardList, ChevronRight, TrendingUp, Calendar } from 'lucide-react';
+import { LogOut, User, Phone, Mail, ChevronRight, TrendingUp, Calendar } from 'lucide-react';
+
+interface UserProfile {
+  name?: string;
+  phone?: string;
+}
+
+interface QuestionnaireResult {
+  id: string;
+  created_at: string;
+  total_score: number;
+  risk_level: string;
+}
+
+interface AuthUser {
+  email?: string;
+}
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [results, setResults] = useState<any[]>([]);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [results, setResults] = useState<QuestionnaireResult[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,7 +79,6 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#f8faf9]">
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-5">
 
-        {/* Hero блок */}
         <div className="relative overflow-hidden rounded-2xl p-7 text-white"
           style={{ background: 'linear-gradient(135deg, var(--logo-green) 0%, #1a7a4a 100%)' }}>
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 -translate-y-1/2 translate-x-1/4"
@@ -85,7 +100,6 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Статистика */}
           <div className="mt-6 grid grid-cols-3 gap-3">
             <div className="bg-white/15 rounded-xl p-3 backdrop-blur-sm">
               <p className="text-green-100 text-xs mb-1">Тестів пройдено</p>
@@ -103,7 +117,6 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {/* Профіль */}
           <div className="md:col-span-1 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -116,7 +129,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                 <User size={15} className="text-gray-400 flex-shrink-0" />
                 <div>
-                  <p className="text-xs text-gray-400">Ім'я</p>
+                  <p className="text-xs text-gray-400">Ім&apos;я</p>
                   <p className="text-sm font-medium text-gray-800">{profile?.name || 'Не вказано'}</p>
                 </div>
               </div>
@@ -137,9 +150,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Дії */}
           <div className="md:col-span-2 space-y-4">
-            {/* Пройти тест */}
             <Link href="/questionnaire"
               className="group flex items-center justify-between p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-green-200 hover:shadow-md transition-all duration-200">
               <div className="flex items-center gap-4">
@@ -155,7 +166,6 @@ export default function DashboardPage() {
               <ChevronRight size={18} className="text-gray-300 group-hover:text-[var(--logo-green)] group-hover:translate-x-1 transition-all" />
             </Link>
 
-            {/* Останній результат */}
             {latestResult ? (
               <Link href={`/dashboard/results/${latestResult.id}`}
                 className="group flex items-center justify-between p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-green-200 hover:shadow-md transition-all duration-200">
@@ -192,7 +202,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Історія */}
         {results.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">

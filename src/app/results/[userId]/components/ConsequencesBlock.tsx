@@ -99,7 +99,7 @@ export function ConsequencesBlock({ riskLevel }: ConsequencesBlockProps) {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-600 mt-1">•</span>
-              <span>Когнітивні порушення, погіршення пам'яті</span>
+              <span>Когнітивні порушення, погіршення пам&apos;яті</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-600 mt-1">•</span>

@@ -1,5 +1,5 @@
 export function generatePersonalizedAdvice(
-  answers: Record<string, any>,
+  answers: Record<string, unknown>,
   bmi: number
 ): string[] {
   const advice: string[] = [];

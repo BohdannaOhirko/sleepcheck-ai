@@ -1,7 +1,7 @@
 "use client";
 
 import { saveQuestionnaireResult } from "./actions";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import questionnaireData from "@/data/questionnaire.json";
 import { Section } from "@/types/questionnaire";
@@ -23,7 +23,6 @@ import {
 import {
   formatAnswerValue,
   getFormattedAnswers,
-  FormattedAnswer,
 } from "./utils/formatters";
 
 interface UserResult {
@@ -32,7 +31,7 @@ interface UserResult {
   totalScore: number;
   riskLevel: "low" | "medium" | "high";
   completedAt: string;
-  answers: Record<string, any>;
+  answers: Record<string, unknown>;
   recommendations?: string[];
   urgencyData?: UrgencyLevel;
   possibleConditions?: PossibleCondition[];
@@ -46,11 +45,7 @@ export default function UserResultPage() {
   const [result, setResult] = useState<UserResult | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadResult();
-  }, [userId]);
-
-  const loadResult = async () => {
+  const loadResult = useCallback(async () => {
     try {
       const answersData = localStorage.getItem("questionnaireAnswers");
       if (!answersData) {
@@ -77,7 +72,6 @@ export default function UserResultPage() {
         possibleConditions: getPossibleConditions(risk, answers),
       };
 
-      // Отримати регіон по IP
       let region: string | undefined;
       try {
         const geoRes = await fetch("https://ipapi.co/json/");
@@ -87,7 +81,6 @@ export default function UserResultPage() {
         region = undefined;
       }
 
-      // Зберегти в базу (один раз!)
       saveQuestionnaireResult({
         answers: answers,
         riskLevel:
@@ -111,7 +104,11 @@ export default function UserResultPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    loadResult();
+  }, [loadResult]);
 
   if (loading) {
     return (

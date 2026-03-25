@@ -98,7 +98,7 @@ export const QUICK_QUESTIONS = [
   { id: 'apnea', text: 'Що таке апное сну?' },
 ];
 
-export function buildChatContext(questionnaireResults?: any): string {
+export function buildChatContext(questionnaireResults?: Record<string, unknown>): string {
   if (!questionnaireResults) return '';
   
   return `

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Calendar } from 'lucide-react';
+// import { Calendar } from 'lucide-react';
 
 interface ResultDetailProps {
-  result: any;
+  result: Record<string, unknown>;
 }
 
 export default function ResultDetail({ result }: ResultDetailProps) {

@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 
 export async function saveQuestionnaireResult(data: {
-  answers: Record<string, any>;
+  answers: Record<string, unknown>;
   riskLevel: string;
   totalScore: number;
   recommendations: string[];

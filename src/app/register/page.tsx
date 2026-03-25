@@ -81,8 +81,8 @@ export default function RegisterPage() {
       setTimeout(() => {
         window.location.href = "/login";
       }, 3000);
-    } catch (err: any) {
-      setError(err.message || "Помилка реєстрації. Спробуйте ще раз.");
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : null) || "Помилка реєстрації. Спробуйте ще раз.");
     } finally {
       setLoading(false);
     }
@@ -162,7 +162,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ім'я та прізвище <span className="text-red-500">*</span>
+                Ім&apos;я та прізвище <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"

@@ -6,7 +6,7 @@ import { MessageCircle, X } from 'lucide-react';
 import ChatWidget from './ChatWidget';
 
 interface ChatButtonProps {
-  questionnaireData?: any;
+  questionnaireData?: Record<string, unknown>;
   position?: 'bottom-right' | 'bottom-left';
 }
 

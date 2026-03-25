@@ -138,7 +138,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Ваше ім'я *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Ваше ім&apos;я *</label>
                 <input
                   type="text"
                   name="name"
@@ -146,7 +146,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3.5 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                  placeholder="Введіть ім'я"
+                  placeholder="Введіть ім&apos;я"
                 />
               </div>
 

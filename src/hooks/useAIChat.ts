@@ -8,7 +8,7 @@ interface UseAIChatOptions {
   initialMessages?: ChatMessage[];
   onError?: (error: Error) => void;
   context?: {
-    questionnaireData?: any;
+    questionnaireData?: Record<string, unknown>;
   };
 }
 

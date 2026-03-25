@@ -9,10 +9,10 @@ import { supabase } from '@/lib/supabase/client';
 
 export default function ResultsPage() {
   const router = useRouter();
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const saveToSupabase = async (answers: any, resultsData: any) => {
+  const saveToSupabase = async (answers: Record<string, unknown>, resultsData: Record<string, unknown>) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;

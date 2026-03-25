@@ -12,7 +12,7 @@ export default function ContactInfo() {
         <div className="grid lg:grid-cols-2 gap-12">
           <div className="space-y-8">
             <div>
-              <h2 className="text-3xl font-light mb-8 tracking-tight">Медичний центр "Ехокор"</h2>
+              <h2 className="text-3xl font-light mb-8 tracking-tight">Медичний центр &quot;Ехокор&quot;</h2>
               <p className="text-muted-foreground font-light leading-relaxed mb-6">
                 Спеціалізуємось на діагностиці та лікуванні розладів сну. Працюємо з 2008 року.
               </p>
@@ -69,7 +69,7 @@ export default function ContactInfo() {
             </div>
             <div className="p-6 bg-muted/30">
               <p className="text-sm text-muted-foreground font-light">
-                📍 Ми розташовані у центрі Львова, зручний під'їзд та паркування
+                📍 Ми розташовані у центрі Львова, зручний під&apos;їзд та паркування
               </p>
             </div>
           </div>

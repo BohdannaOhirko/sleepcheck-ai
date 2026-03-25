@@ -1,9 +1,17 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import questionnaireData from '@/data/questionnaire.json';
+
+interface QuestionItem {
+  id: string;
+}
+
+interface SectionItem {
+  questions: QuestionItem[];
+}
 
 const QUESTIONS_PER_PAGE = 5;
 const TOTAL_QUESTIONS = 30;
@@ -18,23 +26,20 @@ export default function QuestionnaireLayout({
   const [answeredCount, setAnsweredCount] = useState(0);
   const [questionRange, setQuestionRange] = useState('');
 
-  // Функція для підрахунку відповідей
   const calculateAnsweredQuestions = () => {
     try {
       const saved = localStorage.getItem('questionnaireAnswers');
       if (!saved) return 0;
       
-      const answers = JSON.parse(saved);
+      const answers: Record<string, unknown> = JSON.parse(saved);
       
-      // Список всіх ID питань
       const allQuestionIds: string[] = [];
-      questionnaireData.sections.forEach((section: any) => {
-        section.questions.forEach((q: any) => {
+      (questionnaireData.sections as SectionItem[]).forEach((section) => {
+        section.questions.forEach((q) => {
           allQuestionIds.push(q.id);
         });
       });
       
-      // Рахуємо тільки валідні відповіді на реальні питання
       const validAnswers = Object.entries(answers).filter(([key, value]) => {
         if (!allQuestionIds.includes(key)) return false;
         if (value === null || value === undefined || value === '') return false;
@@ -48,8 +53,7 @@ export default function QuestionnaireLayout({
     }
   };
 
-  // Функція оновлення прогресу
-  const updateProgress = () => {
+  const updateProgress = useCallback(() => {
     const stepMatch = pathname.match(/\/questionnaire\/(\d+)/);
     if (stepMatch) {
       const page = parseInt(stepMatch[1]);
@@ -71,7 +75,7 @@ export default function QuestionnaireLayout({
       setQuestionRange('');
       setProgress(0);
     }
-  };
+  }, [pathname]);
 
   useEffect(() => {
     updateProgress();
@@ -85,7 +89,7 @@ export default function QuestionnaireLayout({
     return () => {
       window.removeEventListener('questionnaire-updated', handleQuestionnaireUpdate);
     };
-  }, [pathname]);
+  }, [updateProgress]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary">
@@ -144,7 +148,7 @@ export default function QuestionnaireLayout({
               </svg>
               <span>Ваші відповіді конфіденційні</span>
             </div>
-            <p>© {new Date().getFullYear()} Медичний центр "Ехокор"</p>
+            <p>© {new Date().getFullYear()} Медичний центр &quot;Ехокор&quot;</p>
           </div>
         </div>
       </footer>

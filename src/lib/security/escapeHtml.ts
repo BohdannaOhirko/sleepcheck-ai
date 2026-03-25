@@ -25,7 +25,7 @@ export function escapeHtml(str: string): string {
 /**
  * Екранування всіх строкових полів в об'єкті
  */
-export function escapeFormData<T extends Record<string, any>>(data: T): T {
+export function escapeFormData<T extends Record<string, unknown>>(data: T): T {
   const escaped = {} as T;
   
   for (const [key, value] of Object.entries(data)) {

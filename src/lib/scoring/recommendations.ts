@@ -9,7 +9,7 @@ import { RiskLevel } from './risk-levels';
 export function generateRecommendations(
   riskLevel: RiskLevel,
   totalScore: number,
-  answers: Record<string, any>
+  answers: Record<string, unknown>
 ): string[] {
   const recommendations: string[] = [];
   
@@ -222,7 +222,7 @@ export function generateRecommendations(
  * Генерує ключові тригери (симптоми що викликають занепокоєння)
  */
 export function generateKeyTriggers(
-  answers: Record<string, any>,
+  answers: Record<string, unknown>,
   totalScore: number
 ): string[] {
   const triggers: string[] = [];

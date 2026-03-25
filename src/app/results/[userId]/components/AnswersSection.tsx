@@ -4,7 +4,7 @@ import { Question, Section } from '@/types/questionnaire';
 interface FormattedAnswer {
   question: Question;
   section: Section;
-  value: any;
+  value: unknown;
 }
 
 interface AnswersSectionProps {

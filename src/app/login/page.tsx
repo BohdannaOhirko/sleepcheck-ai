@@ -40,8 +40,8 @@ export default function LoginPage() {
       // Повний редірект — браузер зробить новий запит вже з cookie сесії
       window.location.href = '/dashboard';
 
-    } catch (err: any) {
-      setError(err.message || 'Невірний email або пароль');
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : null) || 'Невірний email або пароль');
       setLoading(false);
     }
   };

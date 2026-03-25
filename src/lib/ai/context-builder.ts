@@ -8,7 +8,7 @@ export interface UserQuestionnaireData {
   fallAsleepTime?: number;
   sleepQuality?: number;
   nightAwakenings?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export class ContextBuilder {

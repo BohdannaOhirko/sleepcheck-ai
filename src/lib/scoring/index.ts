@@ -37,7 +37,7 @@ export {
  * 
  * Використовуйте цю функцію для отримання ВСІХ результатів одразу
  */
-export function calculateCompleteResults(answers: Record<string, any>) {
+export function calculateCompleteResults(answers: Record<string, unknown>) {
   // 1. Розраховуємо бали
   const totalScore = calculateTotalScore(answers);
   

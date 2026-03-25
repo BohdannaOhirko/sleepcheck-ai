@@ -14,7 +14,7 @@ import {
 /**
  * Розраховує загальний бал (0-100) на основі відповідей анкети
  */
-export function calculateTotalScore(answers: Record<string, any>): number {
+export function calculateTotalScore(answers: Record<string, unknown>): number {
   let score = 0;
   
 
@@ -209,7 +209,7 @@ export function calculateTotalScore(answers: Record<string, any>): number {
 /**
  * Розраховує бали за окремими категоріями (0-10)
  */
-export function calculateCategoryScores(answers: Record<string, any>) {
+export function calculateCategoryScores(answers: Record<string, unknown>) {
   let sleep = 0;
   let symptoms = 0;
   let daytime = 0;
@@ -275,10 +275,10 @@ export function calculateGaugeValue(totalScore: number): number {
   return Math.min(Math.round(totalScore), 100);
 }
 
-export function isValidAnswer(answer: any): boolean {
+export function isValidAnswer(answer: unknown): boolean {
   return answer !== null && answer !== undefined && answer !== '';
 }
 
-export function countAnsweredQuestions(answers: Record<string, any>): number {
+export function countAnsweredQuestions(answers: Record<string, unknown>): number {
   return Object.values(answers).filter(isValidAnswer).length;
 }

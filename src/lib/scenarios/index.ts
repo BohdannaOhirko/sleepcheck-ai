@@ -4,7 +4,7 @@ import { determineUrgency } from './determine-urgency';
 import { generateScenarios } from './generate-scenarios';
 import { generatePersonalizedAdvice } from './generate-advice';
 
-export function analyzeAnswers(answers: Record<string, any>): AnalysisResult {
+export function analyzeAnswers(answers: Record<string, unknown>): AnalysisResult {
   const bmi = answers.bmi 
     ? answers.bmi.weight / Math.pow(answers.bmi.height / 100, 2) 
     : 25;

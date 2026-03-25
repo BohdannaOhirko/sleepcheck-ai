@@ -74,7 +74,7 @@ export const CHATBOT_SYSTEM_PROMPT = `
 // Функція для формування контексту чатбота
 export function buildChatbotContext(
   userMessage: string,
-  questionnaireResults?: any
+  questionnaireResults?: Record<string, unknown>
 ): string {
   let context = `Запитання користувача: ${userMessage}\n\n`
 

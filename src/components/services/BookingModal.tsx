@@ -91,7 +91,7 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Ваше ім'я <span className="text-red-400">*</span>
+                Ваше ім&apos;я <span className="text-red-400">*</span>
               </label>
               <input {...register('name')} type="text" placeholder="Іван Іваненко"
                 className={inputClass(!!errors.name)} />
@@ -134,7 +134,7 @@ export default function BookingModal({ isOpen, onClose, serviceName }: BookingMo
             </button>
 
             <p className="text-xs text-gray-400 text-center">
-              <span className="text-red-400">*</span> Обов'язкові поля
+              <span className="text-red-400">*</span> Обов&apos;язкові поля
             </p>
           </form>
         </div>

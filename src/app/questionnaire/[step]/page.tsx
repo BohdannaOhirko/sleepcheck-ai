@@ -18,8 +18,11 @@ import {
   isMultipleQuestion,
   isNumericQuestion,
   isBMIQuestion,
+  Question,
 } from '@/types/questionnaire';
 import { getIcon } from '@/lib/icons';
+
+type AnswerValue = string | number | boolean | string[] | null;
 
 export default function QuestionPage() {
   const params = useParams();
@@ -30,7 +33,6 @@ export default function QuestionPage() {
     questionsData,
     totalQuestions,
     totalPages,
-    currentPage,
     firstQuestionNumber,
     lastQuestionNumber,
     answers,
@@ -40,13 +42,12 @@ export default function QuestionPage() {
     canProceed,
   } = useQuestionnaire(step);
 
-  // Функція для підрахунку прогресу
   const calculateProgress = () => {
     try {
       const saved = localStorage.getItem('questionnaireAnswers');
       if (!saved) return { count: 0, percentage: 0 };
       
-      const savedAnswers = JSON.parse(saved);
+      const savedAnswers: Record<string, AnswerValue> = JSON.parse(saved);
       const validCount = Object.values(savedAnswers).filter(v => 
         v !== null && v !== undefined && v !== '' && 
         !(Array.isArray(v) && v.length === 0)
@@ -67,7 +68,7 @@ export default function QuestionPage() {
     return null;
   }
 
-  const renderQuestion = (question: any, answer: any) => {
+  const renderQuestion = (question: Question, answer: AnswerValue) => {
     if (isScaleQuestion(question)) {
       return (
         <QuestionScale 
@@ -127,7 +128,6 @@ export default function QuestionPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Header з прогресом */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
@@ -143,7 +143,6 @@ export default function QuestionPage() {
           </span>
         </div>
         
-        {/* Прогрес бар - синхронізований з верхнім */}
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div
             className="bg-gradient-to-r from-green-500 to-blue-500 h-2.5 rounded-full transition-all duration-300"
@@ -157,7 +156,6 @@ export default function QuestionPage() {
       </div>
 
       <div className="bg-card rounded-3xl shadow-xl border border-border p-8 sm:p-10">
-        {/* 3D візуалізація */}
         {hasBreathingPausesQuestion && (
           <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg">
             <div className="flex items-start gap-4">
@@ -193,15 +191,13 @@ export default function QuestionPage() {
           </div>
         )}
 
-        {/* Рендер всіх питань на сторінці */}
         <div className="space-y-8">
-          {questionsData.map(({ question, section }, index) => {
+          {questionsData.map(({ question }, index) => {
             const questionNumber = firstQuestionNumber + index;
             
             return (
               <div key={question.id} className="pb-8 border-b border-border last:border-b-0 last:pb-0">
                 <div className="mb-4">
-                  {/* Нумерація питання */}
                   <div className="flex items-center gap-3 mb-3">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold flex items-center justify-center text-lg shadow-md">
                       {questionNumber}
@@ -211,17 +207,14 @@ export default function QuestionPage() {
                     </span>
                   </div>
                   
-                  {/* Заголовок питання */}
                   <h2 className="text-xl font-bold text-foreground mb-1">
                     {question.question}
                   </h2>
                   
-                  {/* Підзаголовок */}
                   {question.subtitle && (
                     <p className="text-sm text-muted-foreground mt-1">{question.subtitle}</p>
                   )}
                   
-                  {/* Підказка */}
                   {question.hint && (
                     <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
                       <span>ℹ️</span>
@@ -230,22 +223,21 @@ export default function QuestionPage() {
                   )}
                 </div>
                 
-                {/* Компонент питання */}
                 {renderQuestion(question, answers[question.id])}
               </div>
             );
           })}
         </div>
 
-     <div className="mt-12">
-  <NavigationButtons
-    onBack={handleBack}
-    onNext={handleNext}
-    canProceed={canProceed()}
-    isFirstStep={step === 1}
-    isLastStep={step === totalPages}
-  />
-</div>
+        <div className="mt-12">
+          <NavigationButtons
+            onBack={handleBack}
+            onNext={handleNext}
+            canProceed={canProceed()}
+            isFirstStep={step === 1}
+            isLastStep={step === totalPages}
+          />
+        </div>
       </div>
 
       <AirwayModal isOpen={showAirwayModal} onClose={() => setShowAirwayModal(false)} />

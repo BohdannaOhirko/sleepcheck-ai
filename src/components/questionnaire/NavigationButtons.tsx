@@ -4,7 +4,6 @@ interface NavigationButtonsProps {
   onBack: () => void;
   onNext: () => void;
   canProceed: boolean;
-  isFirstStep: boolean;
   isLastStep: boolean;
 }
 
@@ -12,7 +11,6 @@ export default function NavigationButtons({
   onBack,
   onNext,
   canProceed,
-  isFirstStep,
   isLastStep,
 }: NavigationButtonsProps) {
   return (

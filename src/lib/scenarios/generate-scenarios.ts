@@ -3,7 +3,7 @@ import { CriticalSymptom, PossibleCondition, ScenariosData } from '@/types/scena
 export function generateScenarios(
   symptoms: CriticalSymptom[],
   conditions: PossibleCondition[],
-  answers: Record<string, any>,
+  answers: Record<string, unknown>,
   bmi: number
 ): ScenariosData {
   const hasApnea = conditions.some(c => c.name.includes('апное') && c.probability !== 'можлива');

@@ -1,7 +1,7 @@
 import { CriticalSymptom, PossibleCondition } from '@/types/scenarios';
 
 export function analyzeSymptoms(
-  answers: Record<string, any>,
+  answers: Record<string, unknown>,
   bmi: number
 ): { symptoms: CriticalSymptom[]; conditions: PossibleCondition[] } {
   const symptoms: CriticalSymptom[] = [];

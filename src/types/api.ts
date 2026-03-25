@@ -23,7 +23,7 @@ export interface ChatRequest {
     content: string;
   }>;
   context?: {
-    questionnaireData?: any;
+    questionnaireData?: Record<string, string | number | boolean | string[]>;
     recentTopics?: string[];
   };
 }
@@ -31,7 +31,7 @@ export interface ChatRequest {
 export interface ApiError {
   error: string;
   code?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 // Експорт типів для зручності

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import ContactHero from '@/components/contacts/ContactHero';
 import ContactInfo from '@/components/contacts/ContactInfo';
 import ContactForm from '@/components/contacts/ContactForm';
@@ -20,9 +21,9 @@ export default function ContactsPage() {
           <p className="text-lg text-muted-foreground mb-10 font-light">
             Запитайте у нашого AI-консультанта — він працює 24/7
           </p>
-          <a href="/" className="inline-flex items-center gap-3 px-10 py-5 rounded-full font-light text-lg border border-border hover:bg-accent transition-all duration-500 hover:scale-105">
+          <Link href="/" className="inline-flex items-center gap-3 px-10 py-5 rounded-full font-light text-lg border border-border hover:bg-accent transition-all duration-500 hover:scale-105">
             Чат з AI-консультантом 💬
-          </a>
+          </Link>
         </div>
       </section>
     </div>

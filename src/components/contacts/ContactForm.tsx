@@ -105,7 +105,7 @@ export default function ContactForm() {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-muted-foreground">
-                  Ваше ім'я <span className="text-destructive">*</span>
+                  Ваше ім&apos;я <span className="text-destructive">*</span>
                 </label>
                 <input
                   {...register('name')}
@@ -237,8 +237,8 @@ export default function ContactForm() {
             </button>
 
             <p className="text-xs text-muted-foreground text-center">
-              <span className="text-destructive">*</span> Обов'язкові поля. 
-              Ми зв'яжемось з вами протягом робочого дня.
+              <span className="text-destructive">*</span> Обов&apos;язкові поля. 
+              Ми зв&apos;яжемось з вами протягом робочого дня.
             </p>
           </form>
         </div>

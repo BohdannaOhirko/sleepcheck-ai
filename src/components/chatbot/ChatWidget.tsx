@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Moon, Sparkles, X, Calendar, Send } from 'lucide-react';
+import { Moon, Sparkles, X, Calendar } from 'lucide-react';
 import { useAIChat } from '@/hooks/useAIChat';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -10,7 +10,7 @@ import TypingIndicator from './TypingIndicator';
 import BookingModal from '@/components/services/BookingModal';
 
 interface ChatWidgetProps {
-  questionnaireData?: any;
+  questionnaireData?: Record<string, unknown>;
   onClose?: () => void;
   className?: string;
 }

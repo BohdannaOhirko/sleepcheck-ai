@@ -73,7 +73,7 @@ export function getRiskInfo(riskLevel: RiskLevel) {
 
 export function requiresUrgentConsultation(
   totalScore: number,
-  answers: Record<string, any>
+  answers: Record<string, unknown>
 ): boolean {
   if (totalScore > 75) return true;
   if (answers['breathing-pauses'] === true) return true;
@@ -119,7 +119,7 @@ export function formatRiskLevel(riskLevel: RiskLevel): string {
   return labels[riskLevel];
 }
 
-export function hasCriticalSymptoms(answers: Record<string, any>): boolean {
+export function hasCriticalSymptoms(answers: Record<string, unknown>): boolean {
   return [
     answers['breathing-pauses'] === true,
     answers['gasping'] === true && answers['daytime-sleepiness'] >= 8,

@@ -1,6 +1,6 @@
 import { PossibleCondition, UrgencyLevel, Examination } from '@/types/scenarios';
 
-export function getUrgencyData(risk: string, answers: Record<string, any>): UrgencyLevel {
+export function getUrgencyData(risk: string, answers: Record<string, unknown>): UrgencyLevel {
   const examinations: Examination[] = [];
   const specialists: string[] = [];
 
@@ -73,7 +73,7 @@ export function getUrgencyData(risk: string, answers: Record<string, any>): Urge
   };
 }
 
-export function getPossibleConditions(risk: string, answers: Record<string, any>): PossibleCondition[] {
+export function getPossibleConditions(risk: string, answers: Record<string, unknown>): PossibleCondition[] {
   const conditions: PossibleCondition[] = [];
 
   if (risk === 'critical' || risk === 'high') {
@@ -158,7 +158,7 @@ export function getPossibleConditions(risk: string, answers: Record<string, any>
   return conditions;
 }
 
-export function generateRecommendations(risk: string, answers: Record<string, any>): string[] {
+export function generateRecommendations(risk: string, answers: Record<string, unknown>): string[] {
   const recommendations: string[] = [];
 
   if (risk === 'critical') {

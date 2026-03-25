@@ -2,7 +2,7 @@ import { CriticalSymptom, UrgencyLevel } from '@/types/scenarios';
 
 export function determineUrgency(
   symptoms: CriticalSymptom[],
-  answers: Record<string, any>,
+  answers: Record<string, unknown>,
   bmi: number
 ): UrgencyLevel {
   const criticalCount = symptoms.filter(s => s.severity === 'critical').length;
