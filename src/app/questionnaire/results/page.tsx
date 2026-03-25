@@ -1,42 +1,76 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { calculateTotalScore, calculateCategoryScores } from '@/lib/scoring/calculator';
-import { determineRiskLevel, getRiskInfo } from '@/lib/scoring/risk-levels';
-import { generateRecommendations } from '@/lib/scoring/recommendations';
-import { supabase } from '@/lib/supabase/client';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  calculateTotalScore,
+  calculateCategoryScores,
+} from "@/lib/scoring/calculator";
+import {
+  determineRiskLevel,
+  getRiskInfo,
+  RiskLevel,
+} from "@/lib/scoring/risk-levels";
+import { generateRecommendations } from "@/lib/scoring/recommendations";
+import { supabase } from "@/lib/supabase/client";
+
+interface CategoryScores {
+  sleepQuality: number;
+  symptoms: number;
+  daytimeFunctioning: number;
+  healthFactors: number;
+}
+
+interface RiskInfo {
+  bgColor: string;
+  borderColor: string;
+  icon: string;
+  title: string;
+  range: string;
+  description: string;
+}
+
+interface Results {
+  score: number;
+  riskLevel: RiskLevel;
+  riskInfo: RiskInfo;
+  categories: CategoryScores;
+  recommendations: string[];
+}
 
 export default function ResultsPage() {
   const router = useRouter();
-  const [results, setResults] = useState<Record<string, unknown> | null>(null);
+  const [results, setResults] = useState<Results | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const saveToSupabase = async (answers: Record<string, unknown>, resultsData: Record<string, unknown>) => {
+  const saveToSupabase = async (
+    answers: Record<string, unknown>,
+    resultsData: Results,
+  ) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return;
 
-      await supabase
-        .from('questionnaire_results')
-        .insert({
-          user_id: session.user.id,
-          answers: answers,
-          total_score: resultsData.score,
-          risk_level: resultsData.riskLevel,
-          recommendations: resultsData.recommendations,
-          sleep_quality: resultsData.categories?.sleepQuality ?? null,
-          fall_asleep_time: resultsData.categories?.fallAsleepTime ?? null,
-          key_issues: [],
-        });
+      await supabase.from("questionnaire_results").insert({
+        user_id: session.user.id,
+        answers: answers,
+        total_score: resultsData.score,
+        risk_level: resultsData.riskLevel,
+        recommendations: resultsData.recommendations,
+        sleep_quality: resultsData.categories?.sleepQuality ?? null,
+        fall_asleep_time: resultsData.categories?.healthFactors ?? null,
+        key_issues: [],
+      });
     } catch (err) {
-      console.error('Помилка збереження:', err);
+      console.error("Помилка збереження:", err);
     }
   };
 
   useEffect(() => {
-    const answersData = localStorage.getItem('questionnaireAnswers');
-    
+    const answersData = localStorage.getItem("questionnaireAnswers");
+
     if (!answersData) {
       setLoading(false);
       return;
@@ -48,9 +82,13 @@ export default function ResultsPage() {
       const riskLevel = determineRiskLevel(score);
       const riskInfo = getRiskInfo(riskLevel);
       const categories = calculateCategoryScores(answers);
-      const recommendations = generateRecommendations(riskLevel, score, answers);
+      const recommendations = generateRecommendations(
+        riskLevel,
+        score,
+        answers,
+      );
 
-      const resultsData = {
+      const resultsData: Results = {
         score,
         riskLevel,
         riskInfo,
@@ -60,9 +98,8 @@ export default function ResultsPage() {
 
       setResults(resultsData);
       saveToSupabase(answers, resultsData);
-
     } catch (error) {
-      console.error('Помилка:', error);
+      console.error("Помилка:", error);
     } finally {
       setLoading(false);
     }
@@ -84,7 +121,7 @@ export default function ResultsPage() {
           <h2 className="text-2xl font-semibold mb-2">Немає результатів</h2>
           <p className="text-gray-600 mb-6">Спочатку пройдіть анкету</p>
           <button
-            onClick={() => router.push('/questionnaire/1')}
+            onClick={() => router.push("/questionnaire/1")}
             className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700"
           >
             Пройти тест
@@ -98,13 +135,14 @@ export default function ResultsPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-2">Ваші результати</h1>
         <p className="text-gray-600">Аналіз ризику апное сну</p>
       </div>
 
-      <div className={`${riskInfo.bgColor} border-l-4 ${riskInfo.borderColor} rounded-lg p-8`}>
+      <div
+        className={`${riskInfo.bgColor} border-l-4 ${riskInfo.borderColor} rounded-lg p-8`}
+      >
         <div className="flex items-center gap-4 mb-4">
           <div className="text-6xl">{riskInfo.icon}</div>
           <div>
@@ -125,7 +163,9 @@ export default function ResultsPage() {
           <div className="p-4 border rounded-lg">
             <div className="text-2xl mb-2">🌙</div>
             <div className="text-sm text-gray-600">Якість сну</div>
-            <div className="text-2xl font-bold">{categories.sleepQuality}/10</div>
+            <div className="text-2xl font-bold">
+              {categories.sleepQuality}/10
+            </div>
           </div>
           <div className="p-4 border rounded-lg">
             <div className="text-2xl mb-2">😴</div>
@@ -135,12 +175,16 @@ export default function ResultsPage() {
           <div className="p-4 border rounded-lg">
             <div className="text-2xl mb-2">☀️</div>
             <div className="text-sm text-gray-600">Денне функціонування</div>
-            <div className="text-2xl font-bold">{categories.daytimeFunctioning}/10</div>
+            <div className="text-2xl font-bold">
+              {categories.daytimeFunctioning}/10
+            </div>
           </div>
           <div className="p-4 border rounded-lg">
             <div className="text-2xl mb-2">❤️</div>
-            <div className="text-sm text-gray-600">Фактори здоров'я</div>
-            <div className="text-2xl font-bold">{categories.healthFactors}/10</div>
+            <div className="text-sm text-gray-600">Фактори здоров&apos;я</div>
+            <div className="text-2xl font-bold">
+              {categories.healthFactors}/10
+            </div>
           </div>
         </div>
       </div>
@@ -149,7 +193,10 @@ export default function ResultsPage() {
         <h3 className="text-2xl font-bold mb-4">💡 Рекомендації</h3>
         <div className="space-y-3">
           {recommendations.map((rec: string, idx: number) => (
-            <div key={idx} className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+            <div
+              key={idx}
+              className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg"
+            >
               <span className="text-blue-600 text-xl">✓</span>
               <p className="text-gray-700">{rec}</p>
             </div>
@@ -159,7 +206,7 @@ export default function ResultsPage() {
 
       <div className="flex gap-4 flex-wrap">
         <button
-          onClick={() => router.push('/scenarios')}
+          onClick={() => router.push("/scenarios")}
           className="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700"
         >
           🔮 Сценарії майбутнього
@@ -172,15 +219,14 @@ export default function ResultsPage() {
         </button>
         <button
           onClick={() => {
-            localStorage.removeItem('questionnaireAnswers');
-            router.push('/questionnaire/1');
+            localStorage.removeItem("questionnaireAnswers");
+            router.push("/questionnaire/1");
           }}
           className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
         >
           🔄 Пройти знову
         </button>
       </div>
-
     </div>
   );
 }

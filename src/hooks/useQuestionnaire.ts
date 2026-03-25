@@ -5,7 +5,7 @@ import { Question, Section, getQuestionDefault } from '@/types/questionnaire';
 
 const QUESTIONS_PER_PAGE = 5;
 
-type AnswerValue = string | number | boolean | string[] | null;
+type AnswerValue = string | number | boolean | string[] | { weight: number; height: number } | null | undefined;
 type AnswersRecord = Record<string, AnswerValue>;
 
 export function useQuestionnaire(step: number) {
