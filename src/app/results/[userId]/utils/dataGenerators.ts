@@ -102,7 +102,7 @@ export function getPossibleConditions(risk: string, answers: Record<string, unkn
       });
     }
 
-    if (answers.diabetes || (answers.bmi && answers.bmi > 30)) {
+    if (answers.diabetes || (answers.bmi && (answers.bmi as number) > 30)) {
       conditions.push({
         name: 'Метаболічний синдром',
         icon: 'activity',
@@ -118,7 +118,7 @@ export function getPossibleConditions(risk: string, answers: Record<string, unkn
       description: '5-30 епізодів апное за годину, рекомендується консультація'
     });
 
-    if (answers['snoring-loudness'] > 7) {
+    if ((answers['snoring-loudness'] as number) > 7) {
       conditions.push({
         name: 'Первинне хропіння',
         icon: 'moon',
@@ -129,7 +129,7 @@ export function getPossibleConditions(risk: string, answers: Record<string, unkn
   }
 
   // Денна сонливість — тільки при помірному ризику і вище
-  if (risk !== 'low' && answers['daytime-sleepiness'] > 7) {
+  if (risk !== 'low' && (answers['daytime-sleepiness'] as number) > 7) {
     conditions.push({
       name: 'Синдром надмірної денної сонливості',
       icon: 'sun',
