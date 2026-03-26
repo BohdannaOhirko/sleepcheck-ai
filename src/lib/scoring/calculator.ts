@@ -282,3 +282,6 @@ export function isValidAnswer(answer: unknown): boolean {
 export function countAnsweredQuestions(answers: Record<string, unknown>): number {
   return Object.values(answers).filter(isValidAnswer).length;
 }
+
+
+

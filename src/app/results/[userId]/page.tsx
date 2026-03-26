@@ -20,10 +20,7 @@ import {
   getPossibleConditions,
   generateRecommendations,
 } from "./utils/dataGenerators";
-import {
-  formatAnswerValue,
-  getFormattedAnswers,
-} from "./utils/formatters";
+import { formatAnswerValue, getFormattedAnswers } from "./utils/formatters";
 
 interface UserResult {
   userId: string;
@@ -146,11 +143,11 @@ export default function UserResultPage() {
 
   const formattedAnswers = getFormattedAnswers(
     result.answers,
-    questionnaireData.sections,
+    questionnaireData.sections as unknown as Section[],
   );
-  const answersBySection = questionnaireData.sections
+  const answersBySection = (questionnaireData.sections as unknown as Section[])
     .map((section) => ({
-      section: section as Section,
+      section,
       answers: formattedAnswers.filter(
         (answer) => answer.section.id === section.id,
       ),

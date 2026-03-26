@@ -1,16 +1,16 @@
-import { Question } from '@/types/questionnaire';
+import { Question, Section } from '@/types/questionnaire';
 
 interface QuestionOption {
   id: string;
   label: string;
 }
 
-interface ScaleQuestion extends Question {
+type ScaleQuestion = Question & {
   scale?: {
     max: number;
     labels?: Record<string, string>;
   };
-}
+};
 
 interface BMIValue {
   weight: number;
@@ -19,7 +19,7 @@ interface BMIValue {
 
 export interface FormattedAnswer {
   question: Question;
-  section: { id: string; title: string; icon?: string };
+  section: Section;
   value: unknown;
 }
 
@@ -64,7 +64,7 @@ export function formatAnswerValue(answer: FormattedAnswer): string {
 
 export function getFormattedAnswers(
   answers: Record<string, unknown>,
-  sections: Array<{ id: string; title: string; icon?: string; questions: Array<{ id: string }> }>
+  sections: Section[]
 ): FormattedAnswer[] {
   const formatted: FormattedAnswer[] = [];
 
