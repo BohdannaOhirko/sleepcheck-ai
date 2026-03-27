@@ -7,11 +7,11 @@ export function determineUrgency(
 ): UrgencyLevel {
   const criticalCount = symptoms.filter(s => s.severity === 'critical').length;
   const highCount = symptoms.filter(s => s.severity === 'high').length;
-  
+
   const hasHeartDisease = answers['heart-disease'] === true;
   const hasSevereSymptoms = answers['breathing-pauses'] || answers['gasping'];
-  const hasDangerousSleepiness = (answers['falling-asleep-sitting'] || 0) >= 7;
-  
+  const hasDangerousSleepiness = (answers['falling-asleep-sitting'] as number || 0) >= 7;
+
   // Критичний рівень
   if (criticalCount >= 2 || (criticalCount >= 1 && hasHeartDisease) || (hasSevereSymptoms && hasDangerousSleepiness)) {
     return {
@@ -37,7 +37,7 @@ export function determineUrgency(
       ]
     };
   }
-  
+
   // Високий рівень
   if (criticalCount >= 1 || highCount >= 2 || (highCount >= 1 && bmi >= 30)) {
     return {
@@ -62,7 +62,7 @@ export function determineUrgency(
       ]
     };
   }
-  
+
   // Помірний рівень
   if (highCount >= 1 || symptoms.length >= 2) {
     return {
@@ -86,7 +86,7 @@ export function determineUrgency(
       ]
     };
   }
-  
+
   // Низький рівень
   return {
     level: 'low',

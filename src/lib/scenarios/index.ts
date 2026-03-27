@@ -4,16 +4,22 @@ import { determineUrgency } from './determine-urgency';
 import { generateScenarios } from './generate-scenarios';
 import { generatePersonalizedAdvice } from './generate-advice';
 
+interface BMIValue {
+  weight: number;
+  height: number;
+}
+
 export function analyzeAnswers(answers: Record<string, unknown>): AnalysisResult {
-  const bmi = answers.bmi 
-    ? answers.bmi.weight / Math.pow(answers.bmi.height / 100, 2) 
+  const bmiData = answers.bmi as BMIValue | undefined;
+  const bmi = bmiData
+    ? bmiData.weight / Math.pow(bmiData.height / 100, 2)
     : 25;
-  
+
   const { symptoms, conditions } = analyzeSymptoms(answers, bmi);
   const urgency = determineUrgency(symptoms, answers, bmi);
   const scenarios = generateScenarios(symptoms, conditions, answers, bmi);
   const personalizedAdvice = generatePersonalizedAdvice(answers, bmi);
-  
+
   return {
     urgency,
     criticalSymptoms: symptoms,

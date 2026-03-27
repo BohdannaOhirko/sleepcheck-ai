@@ -77,9 +77,9 @@ export function requiresUrgentConsultation(
 ): boolean {
   if (totalScore > 75) return true;
   if (answers['breathing-pauses'] === true) return true;
-  if (answers['gasping'] === true && answers['daytime-sleepiness'] >= 7) return true;
+  if (answers['gasping'] === true && (answers['daytime-sleepiness'] as number) >= 7) return true;
   if (answers['heart-disease'] === true && totalScore > 50) return true;
-  if (answers['daytime-sleepiness'] >= 9) return true;
+  if ((answers['daytime-sleepiness'] as number) >= 9) return true;
   if (
     Array.isArray(answers['partner-complaints']) &&
     answers['partner-complaints'].includes('breathing-stops')
@@ -122,7 +122,7 @@ export function formatRiskLevel(riskLevel: RiskLevel): string {
 export function hasCriticalSymptoms(answers: Record<string, unknown>): boolean {
   return [
     answers['breathing-pauses'] === true,
-    answers['gasping'] === true && answers['daytime-sleepiness'] >= 8,
+    answers['gasping'] === true && (answers['daytime-sleepiness'] as number) >= 8,
     answers['heart-disease'] === true,
     Array.isArray(answers['partner-complaints']) &&
       answers['partner-complaints'].includes('breathing-stops')

@@ -11,12 +11,16 @@ import {
   CONCERN_WEIGHT,
 } from './scoring-weights';
 
+interface BMIValue {
+  weight: number;
+  height: number;
+}
+
 /**
  * Розраховує загальний бал (0-100) на основі відповідей анкети
  */
 export function calculateTotalScore(answers: Record<string, unknown>): number {
   let score = 0;
-  
 
   // ================================
   // РОЗДІЛ 1: Режим сну
@@ -59,7 +63,6 @@ export function calculateTotalScore(answers: Record<string, unknown>): number {
     score += BREATHING_WEIGHTS.snoring;
   }
 
-  // Рахуємо тільки якщо є хропіння
   if (
     (answers['snoring'] === true || answers['snoring'] === 'yes') &&
     answers['snoring-loudness'] !== undefined
@@ -118,7 +121,7 @@ export function calculateTotalScore(answers: Record<string, unknown>): number {
   // ================================
 
   if (answers['bmi']) {
-    const bmiData = answers['bmi'];
+    const bmiData = answers['bmi'] as BMIValue | number;
     let bmi: number;
     if (typeof bmiData === 'object' && bmiData.weight && bmiData.height) {
       const heightM = Number(bmiData.height) / 100;
@@ -175,7 +178,6 @@ export function calculateTotalScore(answers: Record<string, unknown>): number {
   // РОЗДІЛ 5: Спостереження партнера
   // ================================
 
-  // Рахуємо тільки якщо є партнер
   if (answers['has-partner'] === true || answers['has-partner'] === 'yes') {
     if (Array.isArray(answers['partner-complaints'])) {
       const complaints = answers['partner-complaints'];
@@ -198,12 +200,9 @@ export function calculateTotalScore(answers: Record<string, unknown>): number {
   }
 
   // Нормалізуємо до 0-100
-// Нормалізуємо до 0-100
   const normalized = Math.min(Math.round((score / MAX_SCORE) * 100), 100);
   console.log('raw score:', score, 'normalized:', normalized);
   return normalized;
-
-  
 }
 
 /**
@@ -243,7 +242,7 @@ export function calculateCategoryScores(answers: Record<string, unknown>) {
   }
 
   if (answers['bmi']) {
-    const bmiData = answers['bmi'];
+    const bmiData = answers['bmi'] as BMIValue | number;
     let bmi: number;
     if (typeof bmiData === 'object' && bmiData.weight && bmiData.height) {
       const heightM = Number(bmiData.height) / 100;
@@ -282,6 +281,3 @@ export function isValidAnswer(answer: unknown): boolean {
 export function countAnsweredQuestions(answers: Record<string, unknown>): number {
   return Object.values(answers).filter(isValidAnswer).length;
 }
-
-
-

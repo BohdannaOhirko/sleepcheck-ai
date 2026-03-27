@@ -79,11 +79,13 @@ export function buildChatbotContext(
   let context = `Запитання користувача: ${userMessage}\n\n`
 
   if (questionnaireResults) {
+    const keyIssues = questionnaireResults.keyIssues as string[] | undefined;
+
     context += `
 Контекст: Користувач вже пройшов анкету. Результати:
 - Загальний бал: ${questionnaireResults.totalScore}
 - Рівень ризику: ${questionnaireResults.riskLevel}
-- Ключові проблеми: ${questionnaireResults.keyIssues.join(', ')}
+- Ключові проблеми: ${keyIssues?.join(', ')}
 
 Використовуй цю інформацію для персоналізованої відповіді.
 `

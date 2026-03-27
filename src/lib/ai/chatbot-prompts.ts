@@ -18,7 +18,7 @@ export const CHATBOT_SYSTEM_PROMPT = `
 
 Послуги сомнологічного відділення МЦ «Ехокор»:
 - безкоштовна онлайн-консультація (15 хв) — попередня оцінка
-- очна консультація лікаря-сомнолога — 1 300 грн
+- очна консультація лікаря-сомнолога — 1 500 грн
 - базова полісомнографія — 9 800 грн
 - комбінована полісомнографія — 13 900 грн
 - полісомнографія + MSLT — 18 800 грн
@@ -37,7 +37,7 @@ export const CHATBOT_SYSTEM_PROMPT = `
 
 Правила про вартість і запис:
 - назви послуг і ціни відтворюй дослівно як у блоці «Послуги»; не округляй і не вигадуй додаткові пакети/знижки
-- числа з пробілами: 1 300 (не 1,300), 9 800 (не 9800)
+- числа з пробілами: 1 500 (не 1,500), 9 800 (не 9800)
 - номер телефону пиши повністю з кодом країни: +38098 881 44 99
 - НЕ використовуй markdown форматування (зірочки, підкреслення) — пиши звичайним текстом
 - коли рекомендуєш запис — завжди пропонуй форму на сайті або телефон адміністрації
@@ -100,11 +100,13 @@ export const QUICK_QUESTIONS = [
 
 export function buildChatContext(questionnaireResults?: Record<string, unknown>): string {
   if (!questionnaireResults) return '';
-  
+
+  const keyIssues = questionnaireResults.keyIssues as string[] | undefined;
+
   return `
 КОНТЕКСТ ПРО КОРИСТУВАЧА:
 - Рівень ризику апное: ${questionnaireResults.riskLevel}
-- Основні проблеми: ${questionnaireResults.keyIssues?.join(', ')}
+- Основні проблеми: ${keyIssues?.join(', ')}
 - Час засинання: ${questionnaireResults.fallAsleepTime} хвилин
 - Оцінка якості сну: ${questionnaireResults.sleepQuality}/10
 

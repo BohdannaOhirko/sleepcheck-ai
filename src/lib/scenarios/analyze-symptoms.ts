@@ -6,7 +6,7 @@ export function analyzeSymptoms(
 ): { symptoms: CriticalSymptom[]; conditions: PossibleCondition[] } {
   const symptoms: CriticalSymptom[] = [];
   const conditions: PossibleCondition[] = [];
-  
+
   // Критичні симптоми дихання
   if (answers['breathing-pauses'] === true) {
     symptoms.push({
@@ -16,7 +16,7 @@ export function analyzeSymptoms(
       description: 'Головний симптом обструктивного апное сну. Потребує обстеження.'
     });
   }
-  
+
   if (answers['gasping'] === true) {
     symptoms.push({
       id: 'gasping',
@@ -25,9 +25,9 @@ export function analyzeSymptoms(
       description: 'Свідчить про епізоди гіпоксії (нестачі кисню) під час сну.'
     });
   }
-  
+
   // Хропіння
-  if (answers['snoring'] === true && (answers['snoring-loudness'] || 0) >= 7) {
+  if (answers['snoring'] === true && (answers['snoring-loudness'] as number || 0) >= 7) {
     symptoms.push({
       id: 'loud-snoring',
       name: 'Гучне хропіння',
@@ -35,9 +35,9 @@ export function analyzeSymptoms(
       description: 'Гучне хропіння часто супроводжує апное сну.'
     });
   }
-  
+
   // Денна сонливість
-  if ((answers['daytime-sleepiness'] || 0) >= 7) {
+  if ((answers['daytime-sleepiness'] as number || 0) >= 7) {
     symptoms.push({
       id: 'severe-sleepiness',
       name: 'Виражена денна сонливість',
@@ -45,8 +45,8 @@ export function analyzeSymptoms(
       description: 'Небезпечна при керуванні транспортом.'
     });
   }
-  
-  if ((answers['falling-asleep-sitting'] || 0) >= 6) {
+
+  if ((answers['falling-asleep-sitting'] as number || 0) >= 6) {
     symptoms.push({
       id: 'falling-asleep',
       name: 'Засинання під час діяльності',
@@ -54,7 +54,7 @@ export function analyzeSymptoms(
       description: 'Підвищує ризик аварій та травм.'
     });
   }
-  
+
   // Супутні захворювання
   if (answers['hypertension'] === true) {
     symptoms.push({
@@ -64,7 +64,7 @@ export function analyzeSymptoms(
       description: 'Часто пов\'язана з апное сну.'
     });
   }
-  
+
   if (answers['heart-disease'] === true) {
     symptoms.push({
       id: 'heart-disease',
@@ -73,7 +73,7 @@ export function analyzeSymptoms(
       description: 'Потребує особливої уваги при апное.'
     });
   }
-  
+
   // Фізичні показники
   if (bmi >= 30) {
     symptoms.push({
@@ -83,8 +83,8 @@ export function analyzeSymptoms(
       description: 'Головний фактор ризику апное сну.'
     });
   }
-  
-  if ((answers['neck-circumference'] || 0) >= 43) {
+
+  if ((answers['neck-circumference'] as number || 0) >= 43) {
     symptoms.push({
       id: 'neck',
       name: 'Збільшений обхват шиї',
@@ -92,7 +92,7 @@ export function analyzeSymptoms(
       description: 'Підвищує ризик обструкції дихальних шляхів.'
     });
   }
-  
+
   if (answers['morning-headaches'] === true) {
     symptoms.push({
       id: 'headaches',
@@ -101,9 +101,9 @@ export function analyzeSymptoms(
       description: 'Можуть бути наслідком нічної гіпоксії.'
     });
   }
-  
+
   // Скарги партнера
-  const partnerComplaints = answers['partner-complaints'] || [];
+  const partnerComplaints = (answers['partner-complaints'] as string[]) || [];
   if (partnerComplaints.includes('breathing-stops') && !symptoms.find(s => s.id === 'breathing-pauses')) {
     symptoms.push({
       id: 'partner-observed-apnea',
@@ -112,11 +112,14 @@ export function analyzeSymptoms(
       description: 'Важливий діагностичний критерій.'
     });
   }
-  
+
   // Визначення можливих станів
   const hasCriticalApnea = answers['breathing-pauses'] || answers['gasping'] || partnerComplaints.includes('breathing-stops');
-  const hasModerateApnea = answers['snoring'] && ((answers['daytime-sleepiness'] || 0) >= 5 || (answers['morning-freshness'] || 10) <= 4);
-  
+  const hasModerateApnea = answers['snoring'] && (
+    (answers['daytime-sleepiness'] as number || 0) >= 5 ||
+    (answers['morning-freshness'] as number || 10) <= 4
+  );
+
   if (hasCriticalApnea) {
     conditions.push({
       name: 'Обструктивне апное сну',
@@ -132,7 +135,7 @@ export function analyzeSymptoms(
       icon: '😴'
     });
   }
-  
+
   if (answers['snoring'] && !hasCriticalApnea) {
     conditions.push({
       name: 'Первинне хропіння',
@@ -141,8 +144,8 @@ export function analyzeSymptoms(
       icon: '🔊'
     });
   }
-  
-  if ((answers['sleep-onset'] || 0) >= 30 || (answers['night-awakenings'] || 0) >= 3) {
+
+  if ((answers['sleep-onset'] as number || 0) >= 30 || (answers['night-awakenings'] as number || 0) >= 3) {
     conditions.push({
       name: 'Інсомнія (безсоння)',
       probability: 'можлива',
@@ -150,7 +153,7 @@ export function analyzeSymptoms(
       icon: '🌙'
     });
   }
-  
+
   if (partnerComplaints.includes('kicks') || partnerComplaints.includes('restless')) {
     conditions.push({
       name: 'Синдром неспокійних ніг',
@@ -159,6 +162,6 @@ export function analyzeSymptoms(
       icon: '🦵'
     });
   }
-  
+
   return { symptoms, conditions };
 }
