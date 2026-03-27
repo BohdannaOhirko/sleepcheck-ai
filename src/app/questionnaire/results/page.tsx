@@ -82,11 +82,7 @@ export default function ResultsPage() {
       const riskLevel = determineRiskLevel(score);
       const riskInfo = getRiskInfo(riskLevel);
       const categories = calculateCategoryScores(answers);
-      const recommendations = generateRecommendations(
-        riskLevel,
-        score,
-        answers,
-      );
+      const recommendations = generateRecommendations(riskLevel, answers);
 
       const resultsData: Results = {
         score,
