@@ -51,7 +51,7 @@ export function calculateCompleteResults(answers: Record<string, unknown>) {
   const categoryScores = calculateCategoryScores(answers);
   
   // 5. Генеруємо рекомендації
-  const recommendations = generateRecommendations(riskLevel, totalScore, answers);
+  const recommendations = generateRecommendations(riskLevel, answers);
   
   // 6. Генеруємо ключові тригери
   const keyTriggers = generateKeyTriggers(answers, totalScore);
