@@ -1,13 +1,13 @@
 // components/chatbot/ChatWidget.tsx
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Moon, Sparkles, X, Calendar } from 'lucide-react';
-import { useAIChat } from '@/hooks/useAIChat';
-import ChatMessage from './ChatMessage';
-import ChatInput from './ChatInput';
-import TypingIndicator from './TypingIndicator';
-import BookingModal from '@/components/services/BookingModal';
+import React, { useRef, useEffect, useState } from "react";
+import { Moon, Sparkles, X, Calendar } from "lucide-react";
+import { useAIChat } from "@/hooks/useAIChat";
+import ChatMessage from "./ChatMessage";
+import ChatInput from "./ChatInput";
+import TypingIndicator from "./TypingIndicator";
+import BookingModal from "@/components/services/BookingModal";
 
 interface ChatWidgetProps {
   questionnaireData?: Record<string, unknown>;
@@ -16,16 +16,16 @@ interface ChatWidgetProps {
 }
 
 const QUICK_QUESTIONS = [
-  { id: 'insomnia', text: 'Не можу заснути вночі' },
-  { id: 'quality', text: 'Як покращити якість сну?' },
-  { id: 'waking', text: 'Прокидаюсь посеред ночі' },
-  { id: 'apnea', text: 'Що таке апное сну?' },
+  { id: "insomnia", text: "Не можу заснути вночі" },
+  { id: "quality", text: "Як покращити якість сну?" },
+  { id: "waking", text: "Прокидаюсь посеред ночі" },
+  { id: "apnea", text: "Що таке апное сну?" },
 ];
 
-export default function ChatWidget({ 
-  questionnaireData, 
+export default function ChatWidget({
+  questionnaireData,
   onClose,
-  className = '' 
+  className = "",
 }: ChatWidgetProps) {
   const { messages, isLoading, error, sendMessage, clearError } = useAIChat({
     context: { questionnaireData },
@@ -35,7 +35,7 @@ export default function ChatWidget({
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -54,32 +54,36 @@ export default function ChatWidget({
 
   const shouldShowBookingButton = () => {
     if (messages.length === 0) return false;
-    const lastBotMessage = [...messages].reverse().find(m => m.role === 'assistant');
+    const lastBotMessage = [...messages]
+      .reverse()
+      .find((m) => m.role === "assistant");
     if (!lastBotMessage) return false;
-    
+
     const keywords = [
-      'записатися',
-      'запису',
-      'форму',
-      'консультацію',
-      'телефон',
-      '+38098 881 44 99',
-      'адміністрації'
+      "записатися",
+      "запису",
+      "форму",
+      "консультацію",
+      "телефон",
+      "+38098 881 44 99",
+      "адміністрації",
     ];
-    
-    return keywords.some(keyword => 
-      lastBotMessage.content.toLowerCase().includes(keyword.toLowerCase())
+
+    return keywords.some((keyword) =>
+      lastBotMessage.content.toLowerCase().includes(keyword.toLowerCase()),
     );
   };
 
   return (
     <>
-      <div className={`flex flex-col h-full bg-gradient-to-b from-gray-50 to-white ${className}`}>
-        {/* Header - Сучасний градієнт */}
+      <div
+        className={`flex flex-col h-full bg-gradient-to-b from-gray-50 to-white ${className}`}
+      >
+        {/* Header */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--logo-green)] to-[var(--logo-lime)] opacity-90"></div>
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-          
+
           <div className="relative p-6 shadow-2xl">
             <div className="flex items-center justify-between max-w-4xl mx-auto">
               <div className="flex items-center gap-4">
@@ -99,7 +103,7 @@ export default function ChatWidget({
                   </p>
                 </div>
               </div>
-              
+
               {onClose && (
                 <button
                   onClick={onClose}
@@ -149,29 +153,28 @@ export default function ChatWidget({
                 <span className="relative text-white flex items-center gap-3 text-base">
                   <Calendar className="w-6 h-6" />
                   Записатися на консультацію
-                  <span className="transition-transform duration-300 group-hover:translate-x-2">→</span>
+                  <span className="transition-transform duration-300 group-hover:translate-x-2">
+                    →
+                  </span>
                 </span>
               </button>
             </div>
           )}
 
-          {/* Quick Questions */}
+          {/* Quick Questions — компактні */}
           {messages.length === 1 && !isLoading && (
-            <div className="space-y-4 mt-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
-              <p className="text-center text-gray-600 text-sm font-semibold uppercase tracking-wider">
+            <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
+              <p className="text-center text-gray-400 text-xs font-semibold uppercase tracking-wider">
                 Популярні питання
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-wrap gap-2 justify-center">
                 {QUICK_QUESTIONS.map((question) => (
                   <button
                     key={question.id}
                     onClick={() => handleQuickQuestion(question.text)}
-                    className="group p-4 bg-white hover:bg-gradient-to-br hover:from-[var(--logo-green)]/5 hover:to-[var(--logo-lime)]/5 border-2 border-gray-100 hover:border-[var(--logo-green)]/30 rounded-2xl text-sm text-gray-700 hover:text-gray-900 transition-all hover:shadow-lg hover:scale-[1.02] text-left active:scale-[0.98] font-medium"
+                    className="px-4 py-2 bg-white border border-gray-200 hover:border-[var(--logo-green)] hover:bg-green-50 rounded-full text-sm text-gray-600 hover:text-gray-900 transition-all hover:shadow-sm active:scale-95"
                   >
-                    <span className="flex items-start gap-2">
-                      <span className="text-[var(--logo-green)] opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                      {question.text}
-                    </span>
+                    {question.text}
                   </button>
                 ))}
               </div>

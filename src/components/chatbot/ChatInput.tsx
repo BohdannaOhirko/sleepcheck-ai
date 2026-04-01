@@ -1,8 +1,8 @@
 // components/chatbot/ChatInput.tsx
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { Send, Loader2 } from "lucide-react";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -14,30 +14,30 @@ interface ChatInputProps {
 export default function ChatInput({
   onSend,
   isLoading,
-  placeholder = 'Опишіть вашу проблему зі сном...',
+  placeholder = "Опишіть вашу проблему зі сном...",
   maxLength = 2000,
 }: ChatInputProps) {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
     if (!input.trim() || isLoading) return;
     onSend(input);
-    setInput('');
+    setInput("");
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
-  // Автоматична зміна висоти textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = "auto";
+      const newHeight = Math.min(textareaRef.current.scrollHeight, 160);
+      textareaRef.current.style.height = `${newHeight}px`;
     }
   }, [input]);
 
@@ -45,9 +45,9 @@ export default function ChatInput({
   const isNearLimit = remainingChars < 100;
 
   return (
-    <div className="border-t border-border bg-card/80 backdrop-blur-sm p-4 shadow-lg">
+    <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
       <div className="max-w-4xl mx-auto">
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-end">
           <div className="flex-1 relative">
             <textarea
               ref={textareaRef}
@@ -55,13 +55,13 @@ export default function ChatInput({
               onChange={(e) => setInput(e.target.value.slice(0, maxLength))}
               onKeyPress={handleKeyPress}
               placeholder={placeholder}
-              className="w-full p-3 pr-10 bg-background border border-input rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all max-h-32 text-foreground placeholder:text-muted-foreground"
-              rows={1}
+              className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl resize-none focus:outline-none focus:border-[var(--logo-green)] focus:bg-white transition-all min-h-[64px] max-h-[160px] text-gray-800 text-base placeholder:text-gray-400 leading-relaxed"
+              rows={2}
               disabled={isLoading}
               maxLength={maxLength}
             />
             {isNearLimit && (
-              <div className="absolute bottom-2 right-3 text-xs text-muted-foreground">
+              <div className="absolute bottom-2 right-3 text-xs text-gray-400">
                 {remainingChars}
               </div>
             )}
@@ -69,7 +69,7 @@ export default function ChatInput({
           <button
             onClick={handleSend}
             disabled={isLoading || !input.trim()}
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
+            className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-[var(--logo-green)] to-[var(--logo-lime)] text-white rounded-2xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center"
             aria-label="Відправити повідомлення"
           >
             {isLoading ? (
@@ -79,13 +79,13 @@ export default function ChatInput({
             )}
           </button>
         </div>
-        
+
         <div className="flex justify-between items-center mt-2 px-1">
-          <p className="text-xs text-muted-foreground">
-            💡 Enter - відправити, Shift+Enter - новий рядок
+          <p className="text-xs text-gray-400">
+            💡 Enter — відправити, Shift+Enter — новий рядок
           </p>
           {input.length > 0 && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-400">
               {input.length} / {maxLength}
             </p>
           )}

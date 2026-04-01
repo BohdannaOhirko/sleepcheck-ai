@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -21,7 +21,8 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed font-light">
-            Прокинутись відпочившим — це не мрія. Це реальність, яку ми створюємо разом з вами.
+            Прокинутись відпочившим — це не мрія. Це реальність, яку ми
+            створюємо разом з вами.
           </p>
         </div>
       </section>
@@ -35,10 +36,16 @@ export default function AboutPage() {
           </h2>
           <div className="space-y-6 text-lg leading-relaxed text-muted-foreground font-light">
             <p className="transition-all duration-500 hover:text-foreground">
-              П&apos;ятнадцять років тому ми відкрили перший в Україні центр діагностики сну. Тоді мало хто розумів серйозність проблеми.
+              Вісімнадцять років тому ми відкрили перший в Україні центр
+              діагностики сну. Тоді мало хто розумів серйозність проблеми.
             </p>
             <p className="transition-all duration-500 hover:text-foreground">
-              За ці роки понад <span className="text-foreground font-medium">10 тисяч людей</span> повернули здоровий сон. Але скільки ще не знають про свою проблему?
+              За ці роки понад{" "}
+              <span className="text-foreground font-medium">
+                10 тисяч людей
+              </span>{" "}
+              повернули здоровий сон. Але скільки ще не знають про свою
+              проблему?
             </p>
             <p className="transition-all duration-500 hover:text-foreground">
               Більшість просто звикли бути втомленими. Вони думають — це норма.
@@ -56,27 +63,40 @@ export default function AboutPage() {
               Чому ми створили AI-діагностику
             </h2>
             <p className="text-lg text-muted-foreground font-light max-w-xl mx-auto">
-              Технології мають служити здоров&apos;ю. Просто. Доступно. Для всіх.
+              Технології мають служити здоров&apos;ю. Просто. Доступно. Для
+              всіх.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="group text-center transition-all duration-500 hover:-translate-y-2">
-              <div className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110">⚡</div>
-              <h3 className="text-xl font-medium mb-3 tracking-tight">П&apos;ять хвилин</h3>
+              <div className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110">
+                ⚡
+              </div>
+              <h3 className="text-xl font-medium mb-3 tracking-tight">
+                П&apos;ять хвилин
+              </h3>
               <p className="text-muted-foreground font-light leading-relaxed">
                 Швидка онлайн-діагностика без черг і стресу
               </p>
             </div>
             <div className="group text-center transition-all duration-500 hover:-translate-y-2">
-              <div className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110">🧠</div>
-              <h3 className="text-xl font-medium mb-3 tracking-tight">Розумний аналіз</h3>
+              <div className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110">
+                🧠
+              </div>
+              <h3 className="text-xl font-medium mb-3 tracking-tight">
+                Розумний аналіз
+              </h3>
               <p className="text-muted-foreground font-light leading-relaxed">
                 AI працює як досвідчений сомнолог
               </p>
             </div>
             <div className="group text-center transition-all duration-500 hover:-translate-y-2">
-              <div className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110">💚</div>
-              <h3 className="text-xl font-medium mb-3 tracking-tight">Безкоштовно</h3>
+              <div className="text-5xl mb-4 transition-transform duration-500 group-hover:scale-110">
+                💚
+              </div>
+              <h3 className="text-xl font-medium mb-3 tracking-tight">
+                Безкоштовно
+              </h3>
               <p className="text-muted-foreground font-light leading-relaxed">
                 Здоров&apos;я — це право кожної людини
               </p>
@@ -96,9 +116,12 @@ export default function AboutPage() {
                 1
               </div>
               <div className="pt-2">
-                <h3 className="text-2xl font-light mb-2 tracking-tight">Відповідаєте на питання</h3>
+                <h3 className="text-2xl font-light mb-2 tracking-tight">
+                  Відповідаєте на питання
+                </h3>
                 <p className="text-muted-foreground font-light leading-relaxed">
-                  Прості запитання про ваш сон. Складені професійними сомнологами на основі міжнародних стандартів.
+                  Прості запитання про ваш сон. Складені професійними
+                  сомнологами на основі міжнародних стандартів.
                 </p>
               </div>
             </div>
@@ -107,9 +130,12 @@ export default function AboutPage() {
                 2
               </div>
               <div className="pt-2">
-                <h3 className="text-2xl font-light mb-2 tracking-tight">AI аналізує дані</h3>
+                <h3 className="text-2xl font-light mb-2 tracking-tight">
+                  AI аналізує дані
+                </h3>
                 <p className="text-muted-foreground font-light leading-relaxed">
-                  Штучний інтелект оцінює ваші ризики. Бачить закономірності. Працює за секунди.
+                  Штучний інтелект оцінює ваші ризики. Бачить закономірності.
+                  Працює за секунди.
                 </p>
               </div>
             </div>
@@ -118,9 +144,12 @@ export default function AboutPage() {
                 3
               </div>
               <div className="pt-2">
-                <h3 className="text-2xl font-light mb-2 tracking-tight">Отримуєте результат</h3>
+                <h3 className="text-2xl font-light mb-2 tracking-tight">
+                  Отримуєте результат
+                </h3>
                 <p className="text-muted-foreground font-light leading-relaxed">
-                  Персональні рекомендації. Конкретні кроки. Якщо потрібно — направлення до лікаря.
+                  Персональні рекомендації. Конкретні кроки. Якщо потрібно —
+                  направлення до лікаря.
                 </p>
               </div>
             </div>
@@ -131,7 +160,9 @@ export default function AboutPage() {
       <section className="py-16 px-6 bg-muted/10">
         <div className="container mx-auto max-w-2xl text-center">
           <div className="text-5xl mb-6">🛡️</div>
-          <h2 className="text-4xl font-light mb-8 tracking-tight">Чесно про AI</h2>
+          <h2 className="text-4xl font-light mb-8 tracking-tight">
+            Чесно про AI
+          </h2>
           <div className="space-y-6 text-lg text-muted-foreground font-light leading-relaxed">
             <p className="transition-all duration-500 hover:text-foreground">
               AI не замінює лікаря.
@@ -139,10 +170,12 @@ export default function AboutPage() {
               <span className="text-foreground font-medium">Ніколи.</span>
             </p>
             <p className="transition-all duration-500 hover:text-foreground">
-              Це розумний помічник. Він допомагає зрозуміти, чи потрібна консультація спеціаліста.
+              Це розумний помічник. Він допомагає зрозуміти, чи потрібна
+              консультація спеціаліста.
             </p>
             <p className="transition-all duration-500 hover:text-foreground">
-              Ваші дані залишаються приватними. Без продажу. Без передачі третім особам.
+              Ваші дані залишаються приватними. Без продажу. Без передачі третім
+              особам.
             </p>
           </div>
         </div>
@@ -159,14 +192,22 @@ export default function AboutPage() {
             Почніть зараз. П&apos;ять хвилин. Безкоштовно.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/questionnaire" className="group relative px-10 py-5 rounded-full font-light text-lg overflow-hidden transition-all duration-500 hover:scale-105">
+            <Link
+              href="/questionnaire"
+              className="group relative px-10 py-5 rounded-full font-light text-lg overflow-hidden transition-all duration-500 hover:scale-105"
+            >
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--logo-green)] to-[var(--logo-lime)] transition-transform duration-500 group-hover:scale-110"></div>
               <span className="relative text-white flex items-center gap-3">
                 Пройти діагностику
-                <span className="transition-transform duration-500 group-hover:translate-x-2">→</span>
+                <span className="transition-transform duration-500 group-hover:translate-x-2">
+                  →
+                </span>
               </span>
             </Link>
-            <Link href="/" className="px-10 py-5 rounded-full font-light text-lg border border-border hover:bg-accent transition-all duration-500 hover:scale-105">
+            <Link
+              href="/"
+              className="px-10 py-5 rounded-full font-light text-lg border border-border hover:bg-accent transition-all duration-500 hover:scale-105"
+            >
               Чат з AI-консультантом
             </Link>
           </div>
