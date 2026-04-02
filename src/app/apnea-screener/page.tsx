@@ -63,7 +63,7 @@ export default function ApneaScreenerPage() {
           score: String(result.score),
           risk: result.risk,
         });
-        router.push(`/apnea-screener/result?${params.toString()}`);
+        router.push(`/apnea-screener/results?${params.toString()}`);
       }
     }
   };
