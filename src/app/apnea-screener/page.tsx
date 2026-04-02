@@ -2,44 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import screenerData from "@/data/apnea-screener.json";
-
-type Answer = boolean | string[] | null;
-
-interface ScoreResult {
-  score: number;
-  risk: "low" | "medium" | "high";
-  label: string;
-  color: string;
-  description: string;
-}
-
-function calculateScore(answers: Record<string, Answer>): ScoreResult {
-  let score = 0;
-
-  screenerData.questions.forEach((q) => {
-    if (q.type === "yesno") {
-      if (answers[q.id] === true) score += q.yesScore ?? 1;
-    } else if (q.type === "multiple" && Array.isArray(answers[q.id])) {
-      const selected = answers[q.id] as string[];
-      q.options?.forEach((opt) => {
-        if (selected.includes(opt.id) && !opt.exclusive) score += opt.score;
-      });
-    }
-  });
-
-  const { scoring } = screenerData;
-  if (score <= scoring.low.max) {
-    return { score, risk: "low", ...scoring.low };
-  } else if (score <= scoring.medium.max) {
-    return { score, risk: "medium", ...scoring.medium };
-  } else {
-    return { score, risk: "high", ...scoring.high };
-  }
-}
+import { calculateScore, saveScreenerResult } from "@/lib/apnea-screener";
+import type { Answer } from "@/lib/apnea-screener";
 
 export default function ApneaScreenerPage() {
-  const [step, setStep] = useState<"intro" | number | "result">("intro");
+  const router = useRouter();
+  const [step, setStep] = useState<"intro" | number>("intro");
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
 
   const questions = screenerData.questions;
@@ -82,10 +52,19 @@ export default function ApneaScreenerPage() {
     return false;
   };
 
-  const goNext = () => {
+  const goNext = async () => {
     if (typeof step === "number") {
-      if (step < questions.length) setStep(step + 1);
-      else setStep("result");
+      if (step < questions.length) {
+        setStep(step + 1);
+      } else {
+        const result = calculateScore(answers);
+        await saveScreenerResult(answers, result);
+        const params = new URLSearchParams({
+          score: String(result.score),
+          risk: result.risk,
+        });
+        router.push(`/apnea-screener/result?${params.toString()}`);
+      }
     }
   };
 
@@ -94,30 +73,6 @@ export default function ApneaScreenerPage() {
     else setStep("intro");
   };
 
-  const result = step === "result" ? calculateScore(answers) : null;
-
-  const riskColors = {
-    low: {
-      bg: "from-emerald-500 to-green-600",
-      text: "text-emerald-700",
-      border: "border-emerald-300",
-      light: "bg-emerald-50",
-    },
-    medium: {
-      bg: "from-amber-400 to-orange-500",
-      text: "text-amber-700",
-      border: "border-amber-300",
-      light: "bg-amber-50",
-    },
-    high: {
-      bg: "from-red-500 to-rose-600",
-      text: "text-red-700",
-      border: "border-red-300",
-      light: "bg-red-50",
-    },
-  };
-
-  // INTRO
   if (step === "intro") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary flex items-center justify-center px-4 py-12">
@@ -131,7 +86,6 @@ export default function ApneaScreenerPage() {
                 </div>
               </div>
             </div>
-
             <h1 className="text-3xl font-bold text-center mb-2">
               <span className="bg-gradient-to-r from-red-500 to-rose-600 bg-clip-text text-transparent">
                 Скринінг апное сну
@@ -140,7 +94,6 @@ export default function ApneaScreenerPage() {
             <p className="text-center text-muted-foreground mb-8">
               {screenerData.description}
             </p>
-
             <div className="space-y-3 mb-8">
               {[
                 {
@@ -171,7 +124,6 @@ export default function ApneaScreenerPage() {
                 </div>
               ))}
             </div>
-
             <div className="space-y-3">
               <button
                 onClick={() => setStep(1)}
@@ -192,123 +144,6 @@ export default function ApneaScreenerPage() {
     );
   }
 
-  // RESULT
-  if (step === "result" && result) {
-    const colors = riskColors[result.risk];
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary flex items-center justify-center px-4 py-12">
-        <div className="max-w-lg w-full">
-          <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden">
-            <div
-              className={`bg-gradient-to-r ${colors.bg} p-8 text-white text-center`}
-            >
-              <div className="text-5xl mb-3">
-                {result.risk === "low"
-                  ? "😴"
-                  : result.risk === "medium"
-                    ? "⚠️"
-                    : "🚨"}
-              </div>
-              <h2 className="text-2xl font-bold mb-1">{result.label}</h2>
-              <p className="text-white/80 text-sm">
-                Ваш результат: {result.score} з {questions.length + 3} балів
-              </p>
-            </div>
-
-            <div className="p-8 space-y-6">
-              <div
-                className={`${colors.light} ${colors.border} border-2 rounded-2xl p-5`}
-              >
-                <p className={`${colors.text} font-medium leading-relaxed`}>
-                  {result.description}
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">
-                  Що робити далі:
-                </h3>
-                {result.risk === "low" && (
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex gap-2">
-                      <span className="text-emerald-500">✓</span> Слідкуйте за
-                      режимом сну
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-emerald-500">✓</span> Пройдіть повну
-                      анкету для детальної оцінки
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-emerald-500">✓</span> За появи нових
-                      симптомів — зверніться до лікаря
-                    </li>
-                  </ul>
-                )}
-                {result.risk === "medium" && (
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex gap-2">
-                      <span className="text-amber-500">→</span> Пройдіть повну
-                      анкету (30 питань)
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-amber-500">→</span> Зверніться на
-                      консультацію до сомнолога
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-amber-500">→</span> Розгляньте
-                      домашній моніторинг сну
-                    </li>
-                  </ul>
-                )}
-                {result.risk === "high" && (
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex gap-2">
-                      <span className="text-red-500">!</span> Необхідна
-                      консультація сомнолога
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-red-500">!</span> Рекомендована
-                      полісомнографія
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-red-500">!</span> Не відкладайте —
-                      апное небезпечне для здоров&apos;я
-                    </li>
-                  </ul>
-                )}
-              </div>
-
-              <div className="space-y-3 pt-2">
-                <Link
-                  href="/services"
-                  className={`block w-full px-6 py-4 rounded-xl font-semibold text-center text-white bg-gradient-to-r ${colors.bg} hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg`}
-                >
-                  Записатися на консультацію →
-                </Link>
-                <Link
-                  href="/questionnaire"
-                  className="block w-full px-6 py-4 rounded-xl font-semibold text-center border-2 border-border hover:border-[var(--logo-green)] hover:bg-accent transition-all"
-                >
-                  Пройти повну анкету (30 питань)
-                </Link>
-                <button
-                  onClick={() => {
-                    setStep("intro");
-                    setAnswers({});
-                  }}
-                  className="block w-full px-6 py-4 rounded-xl text-sm text-muted-foreground text-center hover:text-foreground transition-colors"
-                >
-                  Пройти скринінг знову
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // QUESTION
   if (!currentQ) return null;
   const progress = (((step as number) - 1) / questions.length) * 100;
 
@@ -374,7 +209,6 @@ export default function ApneaScreenerPage() {
               з {questions.length} питань
             </span>
           </div>
-
           <h2 className="text-xl sm:text-2xl font-bold mb-2 text-foreground">
             {currentQ.question}
           </h2>
@@ -390,7 +224,6 @@ export default function ApneaScreenerPage() {
             </div>
           )}
 
-          {/* YES/NO */}
           {currentQ.type === "yesno" && (
             <div className="space-y-3">
               {[
@@ -437,7 +270,6 @@ export default function ApneaScreenerPage() {
             </div>
           )}
 
-          {/* MULTIPLE */}
           {currentQ.type === "multiple" && (
             <div className="space-y-2">
               {currentQ.options?.map((opt) => {
@@ -448,18 +280,14 @@ export default function ApneaScreenerPage() {
                   <button
                     key={opt.id}
                     onClick={() => handleMultiple(opt.id)}
-                    className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all hover:scale-[1.005] text-sm ${
+                    className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all text-sm ${
                       selected
                         ? "border-[var(--logo-green)] bg-[var(--logo-green)]/10 text-foreground"
                         : "border-border hover:border-gray-300 bg-background hover:bg-accent text-muted-foreground"
                     }`}
                   >
                     <span
-                      className={`w-5 h-5 rounded flex items-center justify-center border-2 flex-shrink-0 transition-colors ${
-                        selected
-                          ? "bg-[var(--logo-green)] border-[var(--logo-green)]"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-5 h-5 rounded flex items-center justify-center border-2 flex-shrink-0 ${selected ? "bg-[var(--logo-green)] border-[var(--logo-green)]" : "border-gray-300"}`}
                     >
                       {selected && (
                         <svg
