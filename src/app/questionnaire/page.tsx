@@ -12,8 +12,7 @@ export default function QuestionnairePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
-      {/* Header */}
+    <div className="max-w-2xl mx-auto space-y-5 pt-6">
       <div className="text-center mb-2">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2">
           <span className="bg-gradient-to-r from-[var(--logo-green)] via-[var(--logo-lime)] to-[var(--logo-aqua)] bg-clip-text text-transparent">
@@ -26,9 +25,9 @@ export default function QuestionnairePage() {
       </div>
 
       {/* Card 1 — Apnea Screener */}
-      <div className="bg-card rounded-3xl shadow-xl border-2 border-border hover:border-red-300 transition-all duration-300 p-6 sm:p-8 group">
+      <div className="bg-card rounded-3xl shadow-xl border-2 border-border hover:border-blue-300 transition-all duration-300 p-6 sm:p-8 group">
         <div className="flex items-start gap-5">
-          <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+          <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
             🫁
           </div>
           <div className="flex-1 min-w-0">
@@ -36,7 +35,7 @@ export default function QuestionnairePage() {
               <h2 className="text-xl font-bold text-foreground">
                 Скринінг апное
               </h2>
-              <span className="px-2 py-0.5 bg-red-100 text-red-600 text-xs font-semibold rounded-full">
+              <span className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs font-semibold rounded-full">
                 ~2 хв
               </span>
             </div>
@@ -62,7 +61,7 @@ export default function QuestionnairePage() {
             </div>
             <Link
               href="/apnea-screener"
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-red-500 to-rose-600 hover:opacity-90 hover:scale-[1.01] transition-all shadow-lg"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-500 to-cyan-600 hover:opacity-90 hover:scale-[1.01] transition-all shadow-lg"
             >
               Пройти скринінг апное
               <svg

@@ -205,7 +205,7 @@ export default function AboutPage() {
               </span>
             </Link>
             <Link
-              href="/"
+              href="/?chat=open"
               className="px-10 py-5 rounded-full font-light text-lg border border-border hover:bg-accent transition-all duration-500 hover:scale-105"
             >
               Чат з AI-консультантом
