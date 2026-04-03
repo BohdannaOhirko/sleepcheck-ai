@@ -11,14 +11,25 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Supabase автоматично зчитує токен з URL
-    supabase.auth.onAuthStateChange((event) => {
+    // Supabase передає токен через хеш в URL
+    // Слухаємо подію PASSWORD_RECOVERY
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        // Користувач авторизований через лист — можна міняти пароль
+        setReady(true);
       }
     });
+
+    // Також перевіряємо чи є активна сесія
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setReady(true);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,7 +83,14 @@ export default function ResetPasswordPage() {
             </div>
           )}
 
-          {!success && (
+          {!ready && !success && (
+            <div className="text-center py-8">
+              <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">Перевірка посилання...</p>
+            </div>
+          )}
+
+          {ready && !success && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
