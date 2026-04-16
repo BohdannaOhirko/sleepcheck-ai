@@ -4,6 +4,14 @@
 import { useState, useCallback, useRef } from 'react';
 import { ChatMessage } from '@/types/api';
 
+const LIMIT_MESSAGE = `Дякую за вашу зацікавленість у темі сну! Бачу, що у вас багато запитань — це означає, що тема для вас справді важлива.
+
+Щоб отримати повноцінну консультацію та індивідуальні рекомендації, пропоную зв'язатись з нашими спеціалістами напряму:
+
+📞 **+380 98 881 4499**
+
+Наші сомнологи допоможуть розібратись з вашою ситуацією детально. Будемо раді вас почути!`;
+
 interface UseAIChatOptions {
   initialMessages?: ChatMessage[];
   onError?: (error: Error) => void;
@@ -25,15 +33,17 @@ export function useAIChat(options: UseAIChatOptions = {}) {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLimitReached, setIsLimitReached] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const USER_MESSAGE_LIMIT = 10;
 
   const sendMessage = useCallback(
     async (content: string) => {
       if (!content.trim() || isLoading) return;
 
       setError(null);
-      
-      // Додаємо повідомлення користувача
+
       const userMessage: ChatMessage = {
         id: Date.now().toString(),
         role: 'user',
@@ -42,17 +52,29 @@ export function useAIChat(options: UseAIChatOptions = {}) {
       };
 
       setMessages((prev) => [...prev, userMessage]);
-      setIsLoading(true);
 
-      // Створюємо AbortController
+      // Рахуємо повідомлення користувача
+      const userMessagesCount = messages.filter((m) => m.role === 'user').length + 1;
+
+      if (userMessagesCount >= USER_MESSAGE_LIMIT) {
+        setIsLimitReached(true);
+        const limitMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: LIMIT_MESSAGE,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, limitMessage]);
+        return;
+      }
+
+      setIsLoading(true);
       abortControllerRef.current = new AbortController();
 
       try {
         const response = await fetch('/api/ai/chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messages: [...messages, userMessage].map((msg) => ({
               role: msg.role,
@@ -70,7 +92,6 @@ export function useAIChat(options: UseAIChatOptions = {}) {
 
         const data = await response.json();
 
-        // Додаємо відповідь асистента
         const assistantMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
@@ -81,12 +102,11 @@ export function useAIChat(options: UseAIChatOptions = {}) {
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Невідома помилка');
-        
+
         if (error.name !== 'AbortError') {
           setError(error.message);
           options.onError?.(error);
 
-          // Додаємо повідомлення про помилку
           const errorMessage: ChatMessage = {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
@@ -114,6 +134,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
       },
     ]);
     setError(null);
+    setIsLimitReached(false);
   }, []);
 
   const clearError = useCallback(() => {
@@ -124,6 +145,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
     messages,
     isLoading,
     error,
+    isLimitReached,
     sendMessage,
     clearMessages,
     clearError,

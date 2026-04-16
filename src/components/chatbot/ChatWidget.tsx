@@ -27,7 +27,14 @@ export default function ChatWidget({
   onClose,
   className = "",
 }: ChatWidgetProps) {
-  const { messages, isLoading, error, sendMessage, clearError } = useAIChat({
+  const {
+    messages,
+    isLoading,
+    error,
+    isLimitReached,
+    sendMessage,
+    clearError,
+  } = useAIChat({
     context: { questionnaireData },
   });
 
@@ -185,7 +192,11 @@ export default function ChatWidget({
         </div>
 
         {/* Input */}
-        <ChatInput onSend={sendMessage} isLoading={isLoading} />
+        <ChatInput
+          onSend={sendMessage}
+          isLoading={isLoading}
+          isLimitReached={isLimitReached}
+        />
       </div>
 
       {/* Booking Modal */}

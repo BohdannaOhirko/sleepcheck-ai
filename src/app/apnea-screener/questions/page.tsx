@@ -16,8 +16,9 @@ export default function ApneaQuestionsPage() {
   const currentQ = questions[step - 1];
   const progress = ((step - 1) / questions.length) * 100;
 
-  const handleYesNo = (value: boolean) => {
-    setAnswers((prev) => ({ ...prev, [currentQ.id]: value }));
+  const handleYesNo = (value: boolean | null | string) => {
+    const stored = value === "unknown" ? null : value;
+    setAnswers((prev) => ({ ...prev, [currentQ.id]: stored as Answer }));
   };
 
   const handleMultiple = (optId: string) => {
@@ -41,9 +42,12 @@ export default function ApneaQuestionsPage() {
 
   const canProceed = () => {
     const ans = answers[currentQ.id];
-    if (currentQ.type === "yesno") return ans !== null && ans !== undefined;
-    if (currentQ.type === "multiple")
-      return Array.isArray(ans) && ans.length > 0;
+    if (currentQ.type === "yesno") {
+      return ans === true || ans === false || ans === null;
+    }
+    if (currentQ.type === "multiple") {
+      return Array.isArray(ans) && (ans as string[]).length > 0;
+    }
     return false;
   };
 
@@ -64,6 +68,37 @@ export default function ApneaQuestionsPage() {
   const goBack = () => {
     if (step > 1) setStep(step - 1);
     else router.push("/apnea-screener");
+  };
+
+  const yesNoOptions = [
+    {
+      value: true,
+      label: "Так",
+      icon: "✓",
+      active: "bg-emerald-600 text-white border-emerald-600 shadow-lg",
+    },
+    {
+      value: false,
+      label: "Ні",
+      icon: "✕",
+      active: "bg-blue-500 text-white border-blue-500 shadow-lg",
+    },
+    ...(currentQ.unknownOption
+      ? [
+          {
+            value: "unknown",
+            label: "Не знаю",
+            icon: "?",
+            active: "bg-gray-500 text-white border-gray-500 shadow-lg",
+          },
+        ]
+      : []),
+  ];
+
+  const getAnswerDisplay = (optValue: boolean | string) => {
+    const ans = answers[currentQ.id];
+    if (optValue === "unknown") return ans === null;
+    return ans === optValue;
   };
 
   return (
@@ -145,37 +180,12 @@ export default function ApneaQuestionsPage() {
 
           {currentQ.type === "yesno" && (
             <div className="space-y-3">
-              {[
-                {
-                  value: true,
-                  label: "Так",
-                  icon: "✓",
-                  active:
-                    "bg-emerald-600 text-white border-emerald-600 shadow-lg",
-                },
-                {
-                  value: false,
-                  label: "Ні",
-                  icon: "✕",
-                  active: "bg-blue-500 text-white border-blue-500 shadow-lg",
-                },
-                ...(currentQ.unknownOption
-                  ? [
-                      {
-                        value: null as unknown as boolean,
-                        label: "Не знаю",
-                        icon: "?",
-                        active:
-                          "bg-gray-500 text-white border-gray-500 shadow-lg",
-                      },
-                    ]
-                  : []),
-              ].map((opt) => (
+              {yesNoOptions.map((opt) => (
                 <button
                   key={String(opt.value)}
-                  onClick={() => handleYesNo(opt.value as boolean)}
+                  onClick={() => handleYesNo(opt.value as boolean | string)}
                   className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all hover:scale-[1.01] font-medium text-base ${
-                    answers[currentQ.id] === opt.value
+                    getAnswerDisplay(opt.value as boolean | string)
                       ? opt.active
                       : "border-border hover:border-gray-300 bg-background hover:bg-accent"
                   }`}

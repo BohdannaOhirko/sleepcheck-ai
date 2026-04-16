@@ -7,6 +7,7 @@ import { Send, Loader2 } from "lucide-react";
 interface ChatInputProps {
   onSend: (message: string) => void;
   isLoading: boolean;
+  isLimitReached?: boolean;
   placeholder?: string;
   maxLength?: number;
 }
@@ -14,6 +15,7 @@ interface ChatInputProps {
 export default function ChatInput({
   onSend,
   isLoading,
+  isLimitReached = false,
   placeholder = "Опишіть вашу проблему зі сном...",
   maxLength = 2000,
 }: ChatInputProps) {
@@ -21,7 +23,7 @@ export default function ChatInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || isLimitReached) return;
     onSend(input);
     setInput("");
   };
@@ -43,6 +45,24 @@ export default function ChatInput({
 
   const remainingChars = maxLength - input.length;
   const isNearLimit = remainingChars < 100;
+
+  if (isLimitReached) {
+    return (
+      <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
+        <div className="max-w-4xl mx-auto">
+          <a
+            href="tel:+380988814499"
+            className="w-full flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-[var(--logo-green)] to-[var(--logo-lime)] text-white font-semibold rounded-2xl hover:opacity-90 transition-all shadow-lg"
+          >
+            📞 Зателефонувати: +380 98 881 4499
+          </a>
+          <p className="text-xs text-gray-400 text-center mt-2">
+            Наші спеціалісти готові відповісти на всі ваші запитання
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
