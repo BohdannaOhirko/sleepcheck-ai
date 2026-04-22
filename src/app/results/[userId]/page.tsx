@@ -52,7 +52,6 @@ export default function UserResultPage() {
       }
 
       const answers = JSON.parse(answersData);
-
       const score = calculateTotalScore(answers);
       const risk = determineRiskLevel(score);
 
@@ -154,10 +153,38 @@ export default function UserResultPage() {
     }))
     .filter((group) => group.answers.length > 0);
 
+  const unknownChecks = [
+    { id: "hypertension", label: "Артеріальний тиск" },
+    { id: "heart-disease", label: "Захворювання серця" },
+    { id: "diabetes", label: "Цукровий діабет" },
+  ].filter((item) => result.answers[item.id] === "unknown");
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 print:bg-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
+        {/* Друкований заголовок */}
+        <div className="hidden print:flex items-center justify-between pb-4 border-b-2 border-gray-200 mb-6">
+          <div className="flex items-center gap-3">
+            <img src="/images/logo.svg" alt="Ехокор" className="h-10" />
+          </div>
+          <div className="text-right text-xs text-gray-500">
+            <div className="font-semibold text-gray-800 text-sm">
+              Результати діагностики сну
+            </div>
+            <div>Медичний центр Ехокор · вул. Угорська 17, Львів</div>
+            <div>+380 98 881 4499 · ehokor.com.ua</div>
+            <div className="mt-1">
+              {new Date().toLocaleDateString("uk-UA", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Навігація — сховати при друку */}
+        <div className="mb-6 print:hidden">
           <button
             onClick={() => router.push("/results")}
             className="text-blue-600 hover:text-blue-800 mb-4 flex items-center gap-2 font-medium hover:gap-3 transition-all"
@@ -172,6 +199,37 @@ export default function UserResultPage() {
             {new Date(result.completedAt).toLocaleDateString("uk-UA")}
           </p>
         </div>
+
+        {/* Попередження про невідомі медичні показники */}
+        {unknownChecks.length > 0 && (
+          <div className="mb-6 bg-amber-50 rounded-2xl p-6 border-2 border-amber-200">
+            <div className="flex gap-3 items-start">
+              <span className="text-2xl">⚠️</span>
+              <div>
+                <h3 className="font-semibold text-amber-800 mb-2">
+                  Рекомендуємо перевірити у лікаря
+                </h3>
+                <p className="text-amber-700 text-sm mb-3">
+                  Ви відповіли "Не знаю" на деякі важливі медичні питання:
+                </p>
+                <ul className="space-y-1">
+                  {unknownChecks.map((item) => (
+                    <li
+                      key={item.id}
+                      className="flex items-center gap-2 text-sm text-amber-800"
+                    >
+                      <span>→</span>
+                      <span>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-amber-700 text-sm mt-3 font-medium">
+                  Зверніться до сімейного лікаря для перевірки цих показників.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mb-6">
           <RiskCard riskLevel={result.riskLevel} score={result.totalScore} />
@@ -206,7 +264,7 @@ export default function UserResultPage() {
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 print:hidden">
           <button
             onClick={() => window.print()}
             className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold shadow-md flex items-center justify-center gap-2"

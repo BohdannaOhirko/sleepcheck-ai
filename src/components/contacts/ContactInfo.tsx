@@ -50,14 +50,12 @@ export default function ContactInfo() {
                   <div className="pt-2">
                     <h3 className="text-lg font-medium mb-1">{item.title}</h3>
                     {item.link ? (
-                      <>
-                        <a
-                          href={item.link}
-                          className="text-muted-foreground font-light hover:text-foreground transition-colors"
-                        >
-                          {item.content}
-                        </a>
-                      </>
+                      <a
+                        href={item.link}
+                        className="text-muted-foreground font-light hover:text-foreground transition-colors"
+                      >
+                        {item.content}
+                      </a>
                     ) : (
                       <p className="text-muted-foreground font-light">
                         {item.content}
@@ -82,7 +80,7 @@ export default function ContactInfo() {
 
             <div className="pt-6">
               <a
-                href="https://www.google.com/maps/search/вул+Угорська+17+Львів"
+                href="https://maps.google.com/?q=вул+Угорська+17+Львів"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-light"
@@ -98,7 +96,7 @@ export default function ContactInfo() {
           <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg">
             <div className="w-full h-[500px] relative">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2572.5!2d24.0317!3d49.8278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x473add7239cfffff%3A0x0!2z0LLRg9C70LjRhtGPINGD0LPQvtGA0YHRjNC60LAsMTcgTNGM0LLRltCy!5e0!3m2!1suk!2sua!4v1700000000000!5m2!1suk!2sua"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2574.6471999960177!2d24.040696111764422!3d49.81150003304501!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x473ae7fb61391799%3A0x2b5617c312a3c4e2!2z0LLRg9C70LjRhtGPINGD0LPQvtGA0YHRjNC60LAsIDE3LCDQm9GM0LLRltCyLCDQm9GM0LLRltCy0YHRjNC60LAg0L7QsdC70LDRgdGC0YwsIDc5MDQ4!5e0!3m2!1suk!2sua!4v1776413504585!5m2!1suk!2sua"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -111,8 +109,7 @@ export default function ContactInfo() {
             </div>
             <div className="p-6 bg-muted/30">
               <p className="text-sm text-muted-foreground font-light">
-                📍 Ми розташовані у центрі Львова, зручний під&apos;їзд та
-                паркування
+                📍 вул. Угорська, 17 — зручний під&apos;їзд та паркування
               </p>
             </div>
           </div>

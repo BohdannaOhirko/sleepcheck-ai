@@ -16,22 +16,29 @@ export default function Footer() {
               className="mb-4"
             />
             <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
-              Медичний центр з діагностики та лікування розладів сну у Львові.
+              Спеціалізований медичний центр у Львові
             </p>
             <div className="flex gap-3 mt-5">
               <a
-                href="#"
+                href="https://www.facebook.com/ehokor/"
                 aria-label="Facebook"
                 className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all font-bold text-sm"
               >
                 f
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/ehokor_lviv/"
                 aria-label="Instagram"
                 className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all text-sm"
               >
                 ✦
+              </a>
+              <a
+                href="https://ehokor.com.ua/"
+                aria-label="Сайт"
+                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all text-sm"
+              >
+                🌐
               </a>
             </div>
           </div>

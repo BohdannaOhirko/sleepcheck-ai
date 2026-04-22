@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { NumericQuestion } from "@/types/questionnaire";
 
 interface QuestionNumericProps {
@@ -21,6 +22,26 @@ function NumberPicker({
   onChange: (v: number) => void;
   label: string;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [inputVal, setInputVal] = useState("");
+
+  const handleClick = () => {
+    setEditing(true);
+    setInputVal(String(value));
+  };
+
+  const handleBlur = () => {
+    setEditing(false);
+    const num = parseInt(inputVal);
+    if (!isNaN(num)) {
+      onChange(Math.min(Math.max(num, min), max));
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleBlur();
+  };
+
   return (
     <div className="flex flex-col items-center gap-2">
       <button
@@ -41,9 +62,29 @@ function NumberPicker({
           />
         </svg>
       </button>
-      <div className="w-20 h-16 text-center text-3xl font-bold bg-card border-2 border-border rounded-xl flex items-center justify-center">
-        {String(value).padStart(2, "0")}
-      </div>
+
+      {editing ? (
+        <input
+          autoFocus
+          type="number"
+          min={min}
+          max={max}
+          value={inputVal}
+          onChange={(e) => setInputVal(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="w-20 h-16 text-center text-3xl font-bold bg-card border-2 border-[var(--logo-green)] rounded-xl focus:outline-none"
+        />
+      ) : (
+        <button
+          onClick={handleClick}
+          className="w-20 h-16 text-center text-3xl font-bold bg-card border-2 border-border rounded-xl hover:border-[var(--logo-green)] transition-all"
+          title="Натисніть щоб ввести вручну"
+        >
+          {String(value).padStart(2, "0")}
+        </button>
+      )}
+
       <button
         onClick={() => onChange(Math.max(value - 1, min))}
         className="w-12 h-12 rounded-xl border-2 border-border hover:border-[var(--logo-aqua)] hover:bg-accent transition-all flex items-center justify-center"
@@ -74,7 +115,6 @@ export default function QuestionNumeric({
 }: QuestionNumericProps) {
   const isTime = question.unit === "година";
 
-  // Для часу зберігаємо як: години * 100 + хвилини (напр. 22:35 = 2235)
   const hours = isTime
     ? Math.floor((value || 2300) / 100)
     : (value ?? question.default ?? question.min);
@@ -94,7 +134,7 @@ export default function QuestionNumeric({
 
   if (isTime) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-center gap-4">
           <NumberPicker
             value={hours}
@@ -114,6 +154,9 @@ export default function QuestionNumeric({
             label="хв"
           />
         </div>
+        <p className="text-center text-xs text-muted-foreground">
+          💡 Натисніть на число щоб ввести вручну
+        </p>
         <div className="text-center text-sm text-muted-foreground">
           Час відходу до сну
         </div>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import Hero from "@/components/landing/Hero";
-import { useState } from 'react';
-import { ChatWidget } from '@/components/chatbot';
+import { useState } from "react";
+import { ChatWidget } from "@/components/chatbot";
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);

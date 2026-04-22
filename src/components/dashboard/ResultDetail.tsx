@@ -27,9 +27,49 @@ export default function ResultDetail({ result }: ResultDetailProps) {
   const fallAsleepTime = result.fall_asleep_time as number | undefined;
   const sleepQuality = result.sleep_quality as number | undefined;
   const recommendations = result.recommendations as string[] | undefined;
+  const answers = result.answers as Record<string, unknown> | undefined;
+
+  // Перевіряємо чи є відповіді "Не знаю" на медичні питання
+  const unknownChecks = [
+    { id: "hypertension", label: "підвищений артеріальний тиск" },
+    { id: "heart-disease", label: "захворювання серця" },
+    { id: "diabetes", label: "цукровий діабет" },
+  ].filter((item) => answers?.[item.id] === "unknown");
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+      {/* Попередження про невідомі медичні показники */}
+      {unknownChecks.length > 0 && (
+        <div className="bg-amber-50 rounded-2xl p-6 border-2 border-amber-200">
+          <div className="flex gap-3 items-start">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <h3 className="font-semibold text-amber-800 mb-2">
+                Рекомендуємо перевірити у лікаря
+              </h3>
+              <p className="text-amber-700 text-sm mb-3">
+                Ви відповіли "Не знаю" на деякі важливі медичні питання. Ці
+                показники можуть впливати на ризик розладів сну:
+              </p>
+              <ul className="space-y-1">
+                {unknownChecks.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex items-center gap-2 text-sm text-amber-800"
+                  >
+                    <span>→</span>
+                    <span className="capitalize">{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-amber-700 text-sm mt-3 font-medium">
+                Зверніться до сімейного лікаря для перевірки цих показників.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Рівень ризику */}
       <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
         <h2 className="text-xl font-semibold mb-4">Рівень ризику апное</h2>

@@ -152,14 +152,19 @@ export function calculateTotalScore(answers: Record<string, unknown>): number {
 
   if (answers['hypertension'] === true || answers['hypertension'] === 'yes') {
     score += HEALTH_WEIGHTS.hypertension;
+  } else if (answers['hypertension'] === 'unknown') {
+    score += HEALTH_WEIGHTS.hypertension * 0.5;
   }
 
   if (answers['heart-disease'] === true || answers['heart-disease'] === 'yes') {
     score += HEALTH_WEIGHTS.heartDisease;
+  } else if (answers['heart-disease'] === 'unknown') {
+    score += HEALTH_WEIGHTS.heartDisease * 0.5;
   }
-
   if (answers['diabetes'] === true || answers['diabetes'] === 'yes') {
     score += HEALTH_WEIGHTS.diabetes;
+  } else if (answers['diabetes'] === 'unknown') {
+    score += HEALTH_WEIGHTS.diabetes * 0.5;
   }
 
   if (answers['smoking'] === true || answers['smoking'] === 'yes') {

@@ -255,3 +255,68 @@
 .animation-delay-4000 {
   animation-delay: 4000ms;
 }
+
+/* ── Print styles ── */
+@media print {
+  /* Сховати непотрібне */
+  header,
+  footer,
+  nav,
+  .chat-button,
+  button:not(.print-visible) {
+    display: none !important;
+  }
+
+  /* Білий фон */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Друкований заголовок */
+  .print-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 24px;
+  }
+
+  .print-header-info {
+    text-align: right;
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  /* Розгорнути всі приховані блоки */
+  .max-h-0 {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Прибрати тіні та градієнти фону */
+  .shadow-sm,
+  .shadow-lg,
+  .shadow-md {
+    box-shadow: none !important;
+  }
+
+  /* Не розривати картки між сторінками */
+  .rounded-2xl,
+  .rounded-lg {
+    break-inside: avoid;
+  }
+
+  /* Прибрати градієнтний фон сторінки */
+  .bg-gradient-to-br {
+    background: white !important;
+  }
+
+  /* Сховати анімовані елементи */
+  .animate-spin,
+  .animate-pulse,
+  .animate-float {
+    animation: none !important;
+  }
+}

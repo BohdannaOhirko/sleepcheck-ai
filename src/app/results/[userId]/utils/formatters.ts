@@ -26,7 +26,8 @@ export interface FormattedAnswer {
 export function formatAnswerValue(answer: FormattedAnswer): string {
   const { question, value } = answer;
 
-  if (question.type === 'yesno') {
+ if (question.type === 'yesno') {
+    if (value === 'unknown') return 'Не знаю';
     return value === true || value === 'yes' ? 'Так' : 'Ні';
   }
 
@@ -39,6 +40,11 @@ export function formatAnswerValue(answer: FormattedAnswer): string {
   }
 
   if (question.type === 'numeric') {
+    if (question.unit === 'година' && typeof value === 'number') {
+      const hours = Math.floor(value / 100);
+      const minutes = value % 100;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
     return `${value} ${question.unit || ''}`;
   }
 

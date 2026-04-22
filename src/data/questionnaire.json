@@ -334,40 +334,43 @@
           "critical": true,
           "thresholds": { "male": 43, "female": 41 }
         },
-        {
-          "id": "hypertension",
-          "type": "yesno",
-          "question": "Чи є у вас підвищений артеріальний тиск?",
-          "subtitle": "Гіпертонія діагностована лікарем",
-          "hint": "Апное сну часто асоціюється з гіпертонією",
-          "weight": 2,
-          "category": "health",
-          "trigger": "moderate",
-          "default": false
-        },
-        {
-          "id": "heart-disease",
-          "type": "yesno",
-          "question": "Чи є у вас захворювання серця?",
-          "subtitle": "Будь-які серцево-судинні захворювання",
-          "hint": "Включає ішемічну хворобу серця, аритмію, серцеву недостатність",
-          "weight": 2.5,
-          "category": "health",
-          "critical": true,
-          "trigger": "high",
-          "default": false
-        },
-        {
-          "id": "diabetes",
-          "type": "yesno",
-          "question": "Чи є у вас цукровий діабет?",
-          "subtitle": "Діабет 1 або 2 типу",
-          "hint": "Діабет підвищує ризик апное сну",
-          "weight": 2,
-          "category": "health",
-          "trigger": "moderate",
-          "default": false
-        },
+       {
+  "id": "hypertension",
+  "type": "yesno",
+  "question": "Чи є у вас підвищений артеріальний тиск?",
+  "subtitle": "Гіпертонія діагностована лікарем",
+  "hint": "Апное сну часто асоціюється з гіпертонією",
+  "weight": 2,
+  "category": "health",
+  "trigger": "moderate",
+  "default": false,
+  "unknownOption": true
+},
+{
+  "id": "heart-disease",
+  "type": "yesno",
+  "question": "Чи є у вас захворювання серця?",
+  "subtitle": "Будь-які серцево-судинні захворювання",
+  "hint": "Включає ішемічну хворобу серця, аритмію, серцеву недостатність",
+  "weight": 2.5,
+  "category": "health",
+  "critical": true,
+  "trigger": "high",
+  "default": false,
+  "unknownOption": true
+},
+    {
+  "id": "diabetes",
+  "type": "yesno",
+  "question": "Чи є у вас цукровий діабет?",
+  "subtitle": "Діабет 1 або 2 типу",
+  "hint": "Діабет підвищує ризик апное сну",
+  "weight": 2,
+  "category": "health",
+  "trigger": "moderate",
+  "default": false,
+  "unknownOption": true
+},
         {
           "id": "smoking",
           "type": "yesno",
