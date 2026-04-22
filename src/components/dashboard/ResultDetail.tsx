@@ -48,8 +48,8 @@ export default function ResultDetail({ result }: ResultDetailProps) {
                 Рекомендуємо перевірити у лікаря
               </h3>
               <p className="text-amber-700 text-sm mb-3">
-                Ви відповіли "Не знаю" на деякі важливі медичні питання. Ці
-                показники можуть впливати на ризик розладів сну:
+                Ви відповіли &quot;Не знаю&quot; на деякі важливі медичні
+                питання. Ці показники можуть впливати на ризик розладів сну:
               </p>
               <ul className="space-y-1">
                 {unknownChecks.map((item) => (

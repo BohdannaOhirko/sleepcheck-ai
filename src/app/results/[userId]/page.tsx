@@ -210,7 +210,8 @@ export default function UserResultPage() {
                   Рекомендуємо перевірити у лікаря
                 </h3>
                 <p className="text-amber-700 text-sm mb-3">
-                  Ви відповіли "Не знаю" на деякі важливі медичні питання:
+                  Ви відповіли &quot;Не знаю&quot; на деякі важливі медичні
+                  питання:
                 </p>
                 <ul className="space-y-1">
                   {unknownChecks.map((item) => (
