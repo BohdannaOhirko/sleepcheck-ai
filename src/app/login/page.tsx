@@ -55,7 +55,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.resetPasswordForEmail(
       formData.email,
       {
-        redirectTo: `https://sleepcheck-ai.vercel.app/reset-password`,
+        redirectTo: `https://sleepcheck-ai.ehokor.com.ua/reset-password`,
       },
     );
     setLoading(false);
