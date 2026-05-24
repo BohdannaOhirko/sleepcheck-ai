@@ -7,6 +7,7 @@ interface QuestionNumericProps {
   question: NumericQuestion;
   value: number;
   onChange: (value: number) => void;
+  allowUnknown?: boolean;
 }
 
 function NumberPicker({
@@ -112,6 +113,7 @@ export default function QuestionNumeric({
   question,
   value,
   onChange,
+  allowUnknown = false,
 }: QuestionNumericProps) {
   const isTime = question.unit === "година";
 
@@ -165,13 +167,15 @@ export default function QuestionNumeric({
   }
 
   const numValue = value ?? question.default ?? question.min;
+  const isUnknown = value === null;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-center gap-4">
         <button
           onClick={handleDecrement}
-          className="w-14 h-14 rounded-xl border-2 border-border hover:border-[var(--logo-aqua)] hover:bg-accent transition-all flex items-center justify-center"
+          disabled={isUnknown}
+          className="w-14 h-14 rounded-xl border-2 border-border hover:border-[var(--logo-aqua)] hover:bg-accent transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <svg
             className="w-6 h-6"
@@ -187,17 +191,20 @@ export default function QuestionNumeric({
             />
           </svg>
         </button>
+
         <div className="relative">
           <div className="w-32 h-20 text-center text-4xl font-bold bg-card border-2 border-border rounded-xl flex items-center justify-center">
-            {numValue}
+            {isUnknown ? "?" : numValue}
           </div>
           <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-sm text-muted-foreground whitespace-nowrap">
             {question.unit}
           </div>
         </div>
+
         <button
           onClick={handleIncrement}
-          className="w-14 h-14 rounded-xl border-2 border-border hover:border-[var(--logo-green)] hover:bg-accent transition-all flex items-center justify-center"
+          disabled={isUnknown}
+          className="w-14 h-14 rounded-xl border-2 border-border hover:border-[var(--logo-green)] hover:bg-accent transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <svg
             className="w-6 h-6"
@@ -214,9 +221,29 @@ export default function QuestionNumeric({
           </svg>
         </button>
       </div>
+
       <div className="text-center text-sm text-muted-foreground mt-8">
         від {question.min} до {question.max} {question.unit}
       </div>
+
+      {(allowUnknown || question.id === "neck-circumference") && (
+        <div className="flex justify-center mt-2">
+          <button
+            onClick={() =>
+              isUnknown
+                ? onChange(question.default ?? question.min)
+                : onChange(null as unknown as number)
+            }
+            className={`px-5 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
+              isUnknown
+                ? "border-[var(--logo-green)] bg-green-50 text-[var(--logo-green)]"
+                : "border-border text-muted-foreground hover:border-[var(--logo-green)] hover:text-[var(--logo-green)]"
+            }`}
+          >
+            {isUnknown ? "Ввести значення" : "Не знаю"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

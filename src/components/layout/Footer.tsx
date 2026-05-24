@@ -19,26 +19,70 @@ export default function Footer() {
               Спеціалізований медичний центр у Львові
             </p>
             <div className="flex gap-3 mt-5">
+              {/* Facebook */}
               <a
                 href="https://www.facebook.com/ehokor/"
                 aria-label="Facebook"
-                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all font-bold text-sm"
+                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all"
               >
-                f
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
               </a>
+
+              {/* Instagram */}
               <a
                 href="https://www.instagram.com/ehokor_lviv/"
                 aria-label="Instagram"
-                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all text-sm"
+                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all"
               >
-                ✦
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle
+                    cx="17.5"
+                    cy="6.5"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                </svg>
               </a>
+
+              {/* Сайт */}
               <a
                 href="https://ehokor.com.ua/"
                 aria-label="Сайт"
-                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all text-sm"
+                className="w-10 h-10 rounded-xl bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 flex items-center justify-center text-gray-400 hover:text-[var(--logo-green)] transition-all"
               >
-                🌐
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
               </a>
             </div>
           </div>

@@ -133,15 +133,17 @@ export function useQuestionnaire(step: number) {
     }
   };
 
-  const canProceed = () => {
-    return questionsData.every(({ question }) => {
-      const answer = answers[question.id];
-      if (answer === null || answer === undefined) return false;
-      if (Array.isArray(answer) && answer.length === 0) return false;
-      if (answer === '') return false;
-      return true;
-    });
-  };
+const canProceed = () => {
+  return questionsData.every(({ question }) => {
+    const answer = answers[question.id];
+    // дозволяємо null для neck-circumference ("Не знаю")
+    if (question.id === "neck-circumference" && answer === null) return true;
+    if (answer === null || answer === undefined) return false;
+    if (Array.isArray(answer) && answer.length === 0) return false;
+    if (answer === "" ) return false;
+    return true;
+  });
+};
 
   return {
     questionsData,

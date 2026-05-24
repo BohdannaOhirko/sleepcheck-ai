@@ -298,7 +298,7 @@ export default function Hero({ onOpenChat }: HeroProps) {
                 ))}
               </div>
               <span>
-                <strong className="text-gray-700">10,000+</strong> пацієнтів
+                <strong className="text-gray-700">500+</strong> користувачів
               </span>
             </div>
             <div className="w-px h-4 bg-gray-200 hidden sm:block" />
