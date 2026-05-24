@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 export default function AboutPage() {
@@ -24,6 +25,22 @@ export default function AboutPage() {
             Прокинутись відпочившим — це не мрія. Це реальність, яку ми
             створюємо разом з вами.
           </p>
+        </div>
+      </section>
+
+      {/* Фото ресепшн */}
+      <section className="px-6 pb-8">
+        <div className="container mx-auto max-w-4xl">
+          <div className="relative w-full h-80 md:h-[480px] rounded-3xl overflow-hidden shadow-xl">
+            <Image
+              src="/images/clinic/reception-desk.jpg"
+              alt="Ресепшн Ехокор"
+              fill
+              className="object-cover"
+              style={{ objectPosition: "center 20%" }}
+              priority
+            />
+          </div>
         </div>
       </section>
 
@@ -52,6 +69,28 @@ export default function AboutPage() {
               <br />
               <span className="text-foreground font-medium">Це не норма.</span>
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Галерея клініки */}
+      <section className="px-6 pb-16">
+        <div className="container mx-auto max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="relative h-64 rounded-2xl overflow-hidden shadow-md">
+            <Image
+              src="/images/clinic/waiting-room.jpg"
+              alt="Зал очікування Ехокор"
+              fill
+              className="object-cover object-center"
+            />
+          </div>
+          <div className="relative h-64 rounded-2xl overflow-hidden shadow-md">
+            <Image
+              src="/images/clinic/corridor.jpg"
+              alt="Коридор Ехокор"
+              fill
+              className="object-cover object-center"
+            />
           </div>
         </div>
       </section>
@@ -106,52 +145,54 @@ export default function AboutPage() {
       </section>
 
       <section className="py-16 px-6">
-        <div className="container mx-auto max-w-3xl">
+        <div className="container mx-auto max-w-4xl">
           <h2 className="text-4xl font-light mb-12 text-center tracking-tight">
             Як це працює
           </h2>
-          <div className="space-y-10">
-            <div className="flex gap-6 items-start group transition-all duration-500 hover:translate-x-2">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-light text-lg transition-all duration-500 group-hover:bg-primary group-hover:text-white">
-                1
-              </div>
-              <div className="pt-2">
-                <h3 className="text-2xl font-light mb-2 tracking-tight">
-                  Відповідаєте на питання
-                </h3>
-                <p className="text-muted-foreground font-light leading-relaxed">
-                  Прості запитання про ваш сон. Складені професійними
-                  сомнологами на основі міжнародних стандартів.
-                </p>
-              </div>
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div className="space-y-10">
+              {[
+                {
+                  n: 1,
+                  title: "Відповідаєте на питання",
+                  text: "Прості запитання про ваш сон. Складені професійними сомнологами на основі міжнародних стандартів.",
+                },
+                {
+                  n: 2,
+                  title: "AI аналізує дані",
+                  text: "Штучний інтелект оцінює ваші ризики. Бачить закономірності. Працює за секунди.",
+                },
+                {
+                  n: 3,
+                  title: "Отримуєте результат",
+                  text: "Персональні рекомендації. Конкретні кроки. Якщо потрібно — направлення до лікаря.",
+                },
+              ].map(({ n, title, text }) => (
+                <div
+                  key={n}
+                  className="flex gap-6 items-start group transition-all duration-500 hover:translate-x-2"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-light text-lg transition-all duration-500 group-hover:bg-primary group-hover:text-white">
+                    {n}
+                  </div>
+                  <div className="pt-2">
+                    <h3 className="text-2xl font-light mb-2 tracking-tight">
+                      {title}
+                    </h3>
+                    <p className="text-muted-foreground font-light leading-relaxed">
+                      {text}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex gap-6 items-start group transition-all duration-500 hover:translate-x-2">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-light text-lg transition-all duration-500 group-hover:bg-primary group-hover:text-white">
-                2
-              </div>
-              <div className="pt-2">
-                <h3 className="text-2xl font-light mb-2 tracking-tight">
-                  AI аналізує дані
-                </h3>
-                <p className="text-muted-foreground font-light leading-relaxed">
-                  Штучний інтелект оцінює ваші ризики. Бачить закономірності.
-                  Працює за секунди.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-6 items-start group transition-all duration-500 hover:translate-x-2">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-light text-lg transition-all duration-500 group-hover:bg-primary group-hover:text-white">
-                3
-              </div>
-              <div className="pt-2">
-                <h3 className="text-2xl font-light mb-2 tracking-tight">
-                  Отримуєте результат
-                </h3>
-                <p className="text-muted-foreground font-light leading-relaxed">
-                  Персональні рекомендації. Конкретні кроки. Якщо потрібно —
-                  направлення до лікаря.
-                </p>
-              </div>
+            <div className="relative h-96 rounded-2xl overflow-hidden shadow-lg hidden md:block">
+              <Image
+                src="/images/clinic/admin-headset.jpg"
+                alt="Адміністратор Ехокор"
+                fill
+                className="object-cover object-top"
+              />
             </div>
           </div>
         </div>
@@ -184,8 +225,7 @@ export default function AboutPage() {
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="text-5xl md:text-6xl font-light mb-6 leading-tight tracking-tight">
-            Здоровий сон —
-            <br />
+            Здоровий сон —<br />
             <span className="font-medium">це ваше право</span>
           </h2>
           <p className="text-xl text-muted-foreground mb-10 font-light">

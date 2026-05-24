@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import ServiceCard from "@/components/services/ServiceCard";
 import BookingModal from "@/components/services/BookingModal";
 import Link from "next/link";
@@ -91,7 +92,6 @@ export default function ServicesPage() {
               "radial-gradient(ellipse, var(--logo-green), transparent 70%)",
           }}
         />
-
         <div className="relative max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-green-100 shadow-sm mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -114,6 +114,21 @@ export default function ServicesPage() {
           <p className="text-xl text-gray-500 leading-relaxed">
             Сучасне обладнання. Досвідчені фахівці. Індивідуальний підхід.
           </p>
+        </div>
+      </section>
+
+      {/* Фото консультації */}
+      <section className="pb-8 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative w-full h-64 md:h-96 rounded-3xl overflow-hidden shadow-lg">
+            <Image
+              src="/images/clinic/doctor-consultation.jpg"
+              alt="Консультація лікаря Ехокор"
+              fill
+              className="object-cover"
+              style={{ objectPosition: "center 30%" }}
+            />
+          </div>
         </div>
       </section>
 
