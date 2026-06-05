@@ -22,6 +22,38 @@ const QUICK_QUESTIONS = [
   { id: "apnea", text: "Що таке апное сну?" },
 ];
 
+// ── CTA-блок запису ──────────────────────────────────────────────
+function BookingCTA({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="mx-auto my-2 w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="rounded-2xl border border-green-100 bg-gradient-to-br from-green-50 to-lime-50 p-4 shadow-sm">
+        <p className="mb-3 text-center text-sm font-medium text-gray-700">
+          🩺 Хочете отримати точну відповідь від лікаря?
+        </p>
+        <button
+          onClick={onClick}
+          type="button"
+          className="group relative w-full overflow-hidden rounded-xl px-5 py-3 font-semibold shadow transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-95"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--logo-green)] to-[var(--logo-lime)]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--logo-lime)] to-[var(--logo-green)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <span className="relative flex items-center justify-center gap-2 text-sm text-white">
+            <Calendar className="h-4 w-4" />
+            Записатися на консультацію
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </span>
+        </button>
+        <p className="mt-2 text-center text-xs text-gray-400">
+          Сомнолог, Львів · вул. Угорська, 17
+        </p>
+      </div>
+    </div>
+  );
+}
+// ─────────────────────────────────────────────────────────────────
+
 export default function ChatWidget({
   questionnaireData,
   onClose,
@@ -53,10 +85,24 @@ export default function ChatWidget({
     sendMessage(text);
   };
 
-  const handleBookingClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleBookingClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setIsBookingModalOpen(true);
+  };
+
+  // Рахуємо повідомлення користувача серед всіх повідомлень
+  // Повертає true, якщо після цього індексу потрібно вставити CTA
+  const shouldInsertCTAAfterIndex = (index: number): boolean => {
+    // Рахуємо скільки user-повідомлень є до цього індексу включно
+    const userMsgCount = messages
+      .slice(0, index + 1)
+      .filter((m) => m.role === "user").length;
+    // CTA після кожного 3-го user-повідомлення (3-го, 6-го, 9-го...)
+    // і тільки якщо наступне повідомлення — не завантажується
+    if (userMsgCount === 0 || userMsgCount % 3 !== 0) return false;
+    // Перевіряємо що поточне повідомлення — user (щоб вставляти після нього)
+    return messages[index].role === "user";
   };
 
   const shouldShowBookingButton = () => {
@@ -141,13 +187,19 @@ export default function ChatWidget({
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 max-w-4xl mx-auto w-full">
-          {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
+          {messages.map((message, index) => (
+            <React.Fragment key={message.id}>
+              <ChatMessage message={message} />
+              {/* ── CTA кожні 3 питання ── */}
+              {!isLoading && shouldInsertCTAAfterIndex(index) && (
+                <BookingCTA onClick={() => handleBookingClick()} />
+              )}
+            </React.Fragment>
           ))}
 
           {isLoading && <TypingIndicator />}
 
-          {/* Booking Button */}
+          {/* Booking Button (за ключовими словами) */}
           {!isLoading && shouldShowBookingButton() && (
             <div className="flex justify-center mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <button
@@ -168,7 +220,7 @@ export default function ChatWidget({
             </div>
           )}
 
-          {/* Quick Questions — компактні */}
+          {/* Quick Questions */}
           {messages.length === 1 && !isLoading && (
             <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
               <p className="text-center text-gray-400 text-xs font-semibold uppercase tracking-wider">

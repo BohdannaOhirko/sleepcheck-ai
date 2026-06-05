@@ -1,6 +1,6 @@
 "use client";
-
-import { useState } from "react";
+ 
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useQuestionnaire } from "@/hooks/useQuestionnaire";
 import {
@@ -21,7 +21,7 @@ import {
   Question,
 } from "@/types/questionnaire";
 import { getIcon } from "@/lib/icons";
-
+ 
 type AnswerValue =
   | string
   | number
@@ -30,12 +30,13 @@ type AnswerValue =
   | { weight: number; height: number }
   | null
   | undefined;
-
+ 
 export default function QuestionPage() {
   const params = useParams();
   const step = Number(params.step);
   const [showAirwayModal, setShowAirwayModal] = useState(false);
-
+  const [progress, setProgress] = useState({ count: 0, percentage: 0 });
+ 
   const {
     questionsData,
     totalQuestions,
@@ -48,36 +49,38 @@ export default function QuestionPage() {
     handleBack,
     canProceed,
   } = useQuestionnaire(step);
-
-  const calculateProgress = () => {
-    try {
-      const saved = localStorage.getItem("questionnaireAnswers");
-      if (!saved) return { count: 0, percentage: 0 };
-
-      const savedAnswers: Record<string, AnswerValue> = JSON.parse(saved);
-      const validCount = Object.values(savedAnswers).filter(
-        (v) =>
-          v !== null &&
-          v !== undefined &&
-          v !== "" &&
-          !(Array.isArray(v) && v.length === 0),
-      ).length;
-
-      return {
-        count: validCount,
-        percentage: (validCount / totalQuestions) * 100,
-      };
-    } catch {
-      return { count: 0, percentage: 0 };
-    }
-  };
-
-  const progress = calculateProgress();
-
+ 
+  useEffect(() => {
+    const calculateProgress = () => {
+      try {
+        const saved = localStorage.getItem("questionnaireAnswers");
+        if (!saved) return { count: 0, percentage: 0 };
+ 
+        const savedAnswers: Record<string, AnswerValue> = JSON.parse(saved);
+        const validCount = Object.values(savedAnswers).filter(
+          (v) =>
+            v !== null &&
+            v !== undefined &&
+            v !== "" &&
+            !(Array.isArray(v) && v.length === 0),
+        ).length;
+ 
+        return {
+          count: validCount,
+          percentage: (validCount / totalQuestions) * 100,
+        };
+      } catch {
+        return { count: 0, percentage: 0 };
+      }
+    };
+ 
+    setProgress(calculateProgress());
+  }, [answers, totalQuestions]);
+ 
   if (!questionsData || questionsData.length === 0) {
     return null;
   }
-
+ 
   const renderQuestion = (question: Question, answer: AnswerValue) => {
     if (isScaleQuestion(question)) {
       return (
@@ -88,7 +91,7 @@ export default function QuestionPage() {
         />
       );
     }
-
+ 
     if (isYesNoQuestion(question)) {
       return (
         <QuestionYesNo
@@ -98,7 +101,7 @@ export default function QuestionPage() {
         />
       );
     }
-
+ 
     if (isMultipleQuestion(question)) {
       return (
         <QuestionMultiple
@@ -108,17 +111,18 @@ export default function QuestionPage() {
         />
       );
     }
-
+ 
     if (isNumericQuestion(question)) {
       return (
         <QuestionNumeric
           question={question}
           value={answer as number}
           onChange={(value) => updateAnswer(question.id, value)}
+          allowUnknown={question.id === "neck-circumference"}
         />
       );
     }
-
+ 
     if (isBMIQuestion(question)) {
       return (
         <QuestionBMI
@@ -128,14 +132,14 @@ export default function QuestionPage() {
         />
       );
     }
-
+ 
     return <div>Невідомий тип питання</div>;
   };
-
+ 
   const hasBreathingPausesQuestion = questionsData.some(
     ({ question }) => question.id === "breathing-pauses",
   );
-
+ 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
@@ -156,20 +160,20 @@ export default function QuestionPage() {
             {totalQuestions}
           </span>
         </div>
-
+ 
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div
             className="bg-gradient-to-r from-green-500 to-blue-500 h-2.5 rounded-full transition-all duration-300"
             style={{ width: `${progress.percentage}%` }}
           />
         </div>
-
+ 
         <p className="text-sm text-muted-foreground mt-2">
           Прогрес проходження: {progress.count}/{totalQuestions} (
           {Math.round(progress.percentage)}%)
         </p>
       </div>
-
+ 
       <div className="bg-card rounded-3xl shadow-xl border border-border p-8 sm:p-10">
         {hasBreathingPausesQuestion && (
           <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg">
@@ -216,11 +220,11 @@ export default function QuestionPage() {
             </div>
           </div>
         )}
-
+ 
         <div className="space-y-8">
           {questionsData.map(({ question }, index) => {
             const questionNumber = firstQuestionNumber + index;
-
+ 
             return (
               <div
                 key={question.id}
@@ -235,17 +239,17 @@ export default function QuestionPage() {
                       Питання {questionNumber} з {totalQuestions}
                     </span>
                   </div>
-
+ 
                   <h2 className="text-xl font-bold text-foreground mb-1">
                     {question.question}
                   </h2>
-
+ 
                   {question.subtitle && (
                     <p className="text-sm text-muted-foreground mt-1">
                       {question.subtitle}
                     </p>
                   )}
-
+ 
                   {question.hint && (
                     <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
                       <span>ℹ️</span>
@@ -253,13 +257,13 @@ export default function QuestionPage() {
                     </div>
                   )}
                 </div>
-
+ 
                 {renderQuestion(question, answers[question.id] ?? null)}
               </div>
             );
           })}
         </div>
-
+ 
         <div className="mt-12">
           <NavigationButtons
             onBack={handleBack}
@@ -269,7 +273,7 @@ export default function QuestionPage() {
           />
         </div>
       </div>
-
+ 
       <AirwayModal
         isOpen={showAirwayModal}
         onClose={() => setShowAirwayModal(false)}
