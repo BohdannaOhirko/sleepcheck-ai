@@ -12,7 +12,7 @@ export default function QuestionnairePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5 pt-6">
+    <div className="max-w-2xl mx-auto space-y-5 pt-24 pb-12 px-4">
       <div className="text-center mb-2">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2">
           <span className="bg-gradient-to-r from-[var(--logo-green)] via-[var(--logo-lime)] to-[var(--logo-aqua)] bg-clip-text text-transparent">

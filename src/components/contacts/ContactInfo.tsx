@@ -11,8 +11,8 @@ export default function ContactInfo() {
     {
       icon: "✉️",
       title: "Email",
-      content: "info@ehokor.ua",
-      link: "mailto:info@ehokor.ua",
+      content: "info@ehokor.com.ua",
+      link: "mailto:info@ehokor.com.ua",
     },
     {
       icon: "🕐",

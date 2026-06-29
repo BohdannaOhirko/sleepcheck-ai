@@ -107,7 +107,9 @@ export default function Hero({ onOpenChat }: HeroProps) {
                 />
               ))}
             </div>
-            <p className="text-xs font-medium text-gray-600">+10к пацієнтів</p>
+            <p className="text-xs font-medium text-gray-600">
+              +10к пацієнтів клініки
+            </p>
           </div>
         </div>
       </div>

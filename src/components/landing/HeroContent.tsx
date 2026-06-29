@@ -216,6 +216,7 @@ export default function HeroContent({
           </div>
           <span>
             <strong className="text-gray-700">500+</strong> користувачів
+            застосунку
           </span>
         </div>
         <div className="w-px h-4 bg-gray-200 hidden sm:block" />
