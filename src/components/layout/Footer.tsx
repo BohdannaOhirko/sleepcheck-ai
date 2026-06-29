@@ -185,9 +185,17 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row items-center justify-between pt-6 border-t border-gray-100 gap-3">
-          <p className="text-xs text-gray-400 text-center">
-            © {new Date().getFullYear()} Ехокор. Всі права захищені.
-          </p>
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            <p className="text-xs text-gray-400 text-center">
+              © {new Date().getFullYear()} Ехокор. Всі права захищені.
+            </p>
+            <Link
+              href="/privacy"
+              className="text-xs text-gray-400 hover:text-[var(--logo-green)] transition-colors"
+            >
+              Політика конфіденційності
+            </Link>
+          </div>
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-xs text-gray-400">
