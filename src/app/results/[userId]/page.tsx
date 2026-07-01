@@ -236,6 +236,32 @@ export default function UserResultPage() {
           <RiskCard riskLevel={result.riskLevel} score={result.totalScore} />
         </div>
 
+        {/* Дисклеймер */}
+        <div className="mb-6 bg-blue-50 rounded-2xl p-5 border border-blue-100 flex gap-3 items-start print:hidden">
+          <span className="text-xl flex-shrink-0">ℹ️</span>
+          <p className="text-sm text-blue-800 leading-relaxed">
+            Цей результат є орієнтовною оцінкою ризиків на основі ваших
+            відповідей і <strong>не є медичним діагнозом</strong>. Для точної
+            діагностики зверніться до лікаря-сомнолога. Медичний центр Ехокор —{" "}
+            <a
+              href="https://ehokor.com.ua"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-blue-600"
+            >
+              ehokor.com.ua
+            </a>
+            , тел.{" "}
+            <a
+              href="tel:+380988814499"
+              className="underline hover:text-blue-600"
+            >
+              +380 98 881 44 99
+            </a>
+            .
+          </p>
+        </div>
+
         {result.recommendations && result.recommendations.length > 0 && (
           <div className="mb-6">
             <RecommendationsList recommendations={result.recommendations} />
